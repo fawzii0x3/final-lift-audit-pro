@@ -29,7 +29,8 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@modules/*": ["./modules/*"]
     }
   },
   "include": ["src"]
