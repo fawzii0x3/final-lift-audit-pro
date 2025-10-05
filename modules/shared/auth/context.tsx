@@ -8,6 +8,7 @@ export interface AuthState {
   loading: boolean;
   signIn: ReturnType<typeof useSignIn>["mutateAsync"];
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<boolean>;
 }
 export const AuthContext = createContext<AuthState>({
   user: null,
@@ -18,4 +19,7 @@ export const AuthContext = createContext<AuthState>({
     throw new Error("AuthProvider not mounted");
   },
   loading: true,
+  resetPassword: async () => {
+    throw new Error("AuthProvider not mounted");
+  },
 });

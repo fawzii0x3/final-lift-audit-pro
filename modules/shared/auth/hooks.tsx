@@ -39,3 +39,45 @@ export function useSignOut() {
     },
   });
 }
+//   const resetPassword = async (email: string) => {
+//     try {
+//       const { error } = await supabase.auth.resetPasswordForEmail(email, {
+//         redirectTo: `${window.location.origin}/reset-password`,
+//       });
+//
+//       if (error) {
+//         toast({
+//           title: "Erreur",
+//           description: error.message,
+//           variant: "destructive",
+//         });
+//         return { error };
+//       }
+//
+//       toast({
+//         title: "Email envoyé",
+//         description:
+//           "Un email de réinitialisation a été envoyé à votre adresse.",
+//       });
+//
+//       return { error: null };
+//     } catch (error) {
+//       return { error };
+//     }
+//   };
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      return !error;
+    },
+    onSuccess: () => {
+      toast.success("Reset email sent");
+    },
+    onError: () => {
+      toast.error("Error sending reset email");
+    },
+  });
+}

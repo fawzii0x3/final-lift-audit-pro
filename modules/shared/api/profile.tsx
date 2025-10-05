@@ -3,6 +3,8 @@ import { supabase } from "../supabase";
 import type { Optional } from "../types";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "./const.ts";
+import { use } from "react";
+import { AuthContext } from "../auth/context.tsx";
 
 interface ProfileProps {
   userId: Optional<string>;
@@ -16,7 +18,10 @@ interface fetchProfileResponse {
 async function fetchProfile({
   userId,
 }: ProfileProps): Promise<fetchProfileResponse> {
-  const result: fetchProfileResponse = { profile: null, needsOnboarding: true };
+  const result: fetchProfileResponse = {
+    profile: null,
+    needsOnboarding: false,
+  };
   if (!userId) {
     throw new Error("User ID is required to fetch profile");
   }
@@ -38,12 +43,22 @@ async function fetchProfile({
   return result;
 }
 
-export function useProfile({ userId }: ProfileProps) {
-  return useQuery({
+export function useProfile() {
+  const { user } = use(AuthContext);
+  const userId = user?.id;
+  const { data, ...result } = useQuery({
     queryKey: [QueryKeys.PROFILE, { userId }],
     queryFn: async () => {
       return fetchProfile({ userId: userId });
     },
     enabled: !!userId,
   });
+  const profile = data?.profile;
+  const needsOnboarding = data?.needsOnboarding;
+  console.log({ profile, needsOnboarding });
+  return {
+    profile,
+    needsOnboarding,
+    ...result,
+  };
 }

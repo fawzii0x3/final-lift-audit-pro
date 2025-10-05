@@ -1,12 +1,11 @@
 import { type PropsWithChildren, use } from "react";
-import { AuthContext } from "./context.tsx";
-import { useProfile } from "../api/profile.tsx";
+import { AuthContext } from "../auth/context";
+import { useProfile } from "../api";
 import { Navigate } from "react-router";
 
 export function ProtectedRoute({ children }: PropsWithChildren) {
   const { user, loading: authLoading } = use(AuthContext);
-  const { data, isLoading: profileLoading } = useProfile({ userId: user?.id });
-  const needsOnboarding = data ? !data.needsOnboarding : false;
+  const { needsOnboarding, isLoading: profileLoading } = useProfile();
   const loading = authLoading || profileLoading;
 
   if (loading) {

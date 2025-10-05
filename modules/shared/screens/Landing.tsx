@@ -20,79 +20,58 @@ import {
 import { useNavigate } from "react-router";
 import { use } from "react";
 import { AuthContext } from "../auth/context";
+import { useTranslation } from "react-i18next";
 
 export function Landing() {
   const { user } = use(AuthContext);
   const navigate = useNavigate();
-  const language = "fr";
+  const { t, i18n } = useTranslation();
 
   const features = [
     {
       icon: Shield,
-      title:
-        language === "fr" ? "Inspections sécurisées" : "Secure Inspections",
-      description:
-        language === "fr"
-          ? "Système d'inspection robuste avec authentification et contrôle d'accès"
-          : "Robust inspection system with authentication and access control",
+      title: t("landing.features.secureInspections.title"),
+      description: t("landing.features.secureInspections.description"),
     },
     {
       icon: Camera,
-      title: language === "fr" ? "Photos intégrées" : "Integrated Photos",
-      description:
-        language === "fr"
-          ? "Téléchargez et organisez des photos directement dans vos rapports"
-          : "Upload and organize photos directly in your reports",
+      title: t("landing.features.integratedPhotos.title"),
+      description: t("landing.features.integratedPhotos.description"),
     },
     {
       icon: FileText,
-      title: language === "fr" ? "Rapports PDF" : "PDF Reports",
-      description:
-        language === "fr"
-          ? "Générez des rapports professionnels avec votre logo et vos données"
-          : "Generate professional reports with your logo and data",
+      title: t("landing.features.pdfReports.title"),
+      description: t("landing.features.pdfReports.description"),
     },
     {
       icon: Users,
-      title: language === "fr" ? "Gestion d'équipe" : "Team Management",
-      description:
-        language === "fr"
-          ? "Gérez les administrateurs et techniciens avec des permissions spécifiques"
-          : "Manage administrators and technicians with specific permissions",
+      title: t("landing.features.teamManagement.title"),
+      description: t("landing.features.teamManagement.description"),
     },
   ];
 
   const steps = [
     {
       number: "01",
-      title: language === "fr" ? "Créer votre compte" : "Create your account",
-      description:
-        language === "fr"
-          ? "Inscrivez-vous et configurez votre organisation"
-          : "Sign up and configure your organization",
+      title: t("landing.howItWorks.createAccount.title"),
+      description: t("landing.howItWorks.createAccount.description"),
     },
     {
       number: "02",
-      title: language === "fr" ? "Ajouter vos clients" : "Add your clients",
-      description:
-        language === "fr"
-          ? "Importez ou créez vos fiches clients avec toutes les informations nécessaires"
-          : "Import or create your client records with all necessary information",
+      title: t("landing.howItWorks.addClients.title"),
+      description: t("landing.howItWorks.addClients.description"),
     },
     {
       number: "03",
-      title:
-        language === "fr"
-          ? "Programmer des inspections"
-          : "Schedule inspections",
-      description:
-        language === "fr"
-          ? "Planifiez et assignez des inspections à vos techniciens"
-          : "Plan and assign inspections to your technicians",
+      title: t("landing.howItWorks.scheduleInspections.title"),
+      description: t("landing.howItWorks.scheduleInspections.description"),
     },
   ];
 
-  const toggleLanguage = () => {};
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "fr" ? "en" : "fr";
+    i18n.changeLanguage(newLang);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -101,22 +80,22 @@ export function Landing() {
         <div className="container flex h-14 items-center">
           <div className="flex items-center space-x-2">
             <Building2 className="h-6 w-6 text-primary" />
-            <span className="font-bold">Crane Inspect Pro</span>
+            <span className="font-bold">{t("landing.brand")}</span>
           </div>
 
           <div className="ml-auto flex items-center space-x-4">
             <Button variant="ghost" size="sm" onClick={toggleLanguage}>
               <Globe className="h-4 w-4 mr-2" />
-              {language.toUpperCase()}
+              {t("landing.language").toUpperCase()}
             </Button>
             {user ? (
               <Button onClick={() => navigate("/")}>
                 <LayoutDashboard className="h-4 w-4 mr-2" />
-                {language === "fr" ? "Tableau de bord" : "Dashboard"}
+                {t("landing.dashboard")}
               </Button>
             ) : (
               <Button variant="outline" onClick={() => navigate("/auth")}>
-                {language === "fr" ? "Connexion" : "Sign In"}
+                {t("landing.signIn")}
               </Button>
             )}
           </div>
@@ -128,41 +107,31 @@ export function Landing() {
         <div className="container">
           <div className="text-center space-y-6">
             <Badge variant="secondary" className="text-sm">
-              {language === "fr"
-                ? "Solution professionnelle"
-                : "Professional Solution"}
+              {t("landing.professionalSolution")}
             </Badge>
 
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-              {language === "fr"
-                ? "Inspections de grues professionnelles"
-                : "Professional Crane Inspections"}
+              {t("landing.hero.title")}
             </h1>
 
             <p className="mx-auto max-w-[600px] text-xl text-muted-foreground">
-              {language === "fr"
-                ? "Gérez vos inspections de grues avec une solution complète : rapports PDF, photos intégrées, gestion d'équipe et conformité réglementaire."
-                : "Manage your crane inspections with a complete solution: PDF reports, integrated photos, team management, and regulatory compliance."}
+              {t("landing.hero.description")}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {user ? (
                 <Button size="lg" onClick={() => navigate("/")}>
                   <LayoutDashboard className="h-4 w-4 mr-2" />
-                  {language === "fr"
-                    ? "Aller au tableau de bord"
-                    : "Go to Dashboard"}
+                  {t("landing.goToDashboard")}
                 </Button>
               ) : (
                 <Button size="lg" onClick={() => navigate("/auth")}>
-                  {language === "fr"
-                    ? "Commencer gratuitement"
-                    : "Get Started Free"}
+                  {t("landing.getStarted")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
               <Button variant="outline" size="lg">
-                {language === "fr" ? "Voir la démo" : "View Demo"}
+                {t("landing.viewDemo")}
               </Button>
             </div>
           </div>
@@ -174,14 +143,10 @@ export function Landing() {
         <div className="container">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl font-bold">
-              {language === "fr"
-                ? "Fonctionnalités principales"
-                : "Key Features"}
+              {t("landing.features.title")}
             </h2>
             <p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
-              {language === "fr"
-                ? "Tout ce dont vous avez besoin pour gérer efficacement vos inspections"
-                : "Everything you need to efficiently manage your inspections"}
+              {t("landing.features.subtitle")}
             </p>
           </div>
 
@@ -208,12 +173,10 @@ export function Landing() {
         <div className="container">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl font-bold">
-              {language === "fr" ? "Comment ça marche" : "How it works"}
+              {t("landing.howItWorks.title")}
             </h2>
             <p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
-              {language === "fr"
-                ? "Commencez à utiliser Crane Inspect Pro en 3 étapes simples"
-                : "Get started with Crane Inspect Pro in 3 simple steps"}
+              {t("landing.howItWorks.subtitle")}
             </p>
           </div>
 
@@ -236,14 +199,10 @@ export function Landing() {
         <div className="container">
           <div className="text-center space-y-6">
             <h2 className="text-3xl font-bold text-primary-foreground">
-              {language === "fr"
-                ? "Prêt à moderniser vos inspections ?"
-                : "Ready to modernize your inspections?"}
+              {t("landing.cta.title")}
             </h2>
             <p className="text-xl text-primary-foreground/80 max-w-[600px] mx-auto">
-              {language === "fr"
-                ? "Rejoignez les professionnels qui font confiance à Crane Inspect Pro"
-                : "Join the professionals who trust Crane Inspect Pro"}
+              {t("landing.cta.subtitle")}
             </p>
             {user ? (
               <Button
@@ -252,9 +211,7 @@ export function Landing() {
                 onClick={() => navigate("/")}
               >
                 <LayoutDashboard className="h-4 w-4 mr-2" />
-                {language === "fr"
-                  ? "Aller au tableau de bord"
-                  : "Go to Dashboard"}
+                {t("landing.goToDashboard")}
               </Button>
             ) : (
               <Button
@@ -262,7 +219,7 @@ export function Landing() {
                 variant="secondary"
                 onClick={() => navigate("/auth")}
               >
-                {language === "fr" ? "Commencer maintenant" : "Get Started Now"}
+                {t("landing.getStartedNow")}
               </Button>
             )}
           </div>
@@ -275,22 +232,20 @@ export function Landing() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2">
               <Building2 className="h-5 w-5 text-primary" />
-              <span className="font-semibold">Crane Inspect Pro</span>
+              <span className="font-semibold">{t("landing.brand")}</span>
             </div>
 
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" onClick={toggleLanguage}>
                 <Globe className="h-4 w-4 mr-2" />
-                {language === "fr" ? "Français" : "English"}
+                {t("landing.language")}
               </Button>
             </div>
           </div>
 
           <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            © 2024 Crane Inspect Pro.{" "}
-            {language === "fr"
-              ? "Tous droits réservés."
-              : "All rights reserved."}
+            © 2024 {t("landing.brand")}.{" "}
+            {t("landing.footer.allRightsReserved")}
           </div>
         </div>
       </footer>

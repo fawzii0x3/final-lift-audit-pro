@@ -1,3 +1,61 @@
 {
-  "welcome": "Welcome to React + Vite + i18n!"
+  "welcome": "Welcome to React + Vite + i18n!",
+  "landing": {
+    "brand": "Crane Inspect Pro",
+    "language": "English",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "getStarted": "Get Started Free",
+    "viewDemo": "View Demo",
+    "goToDashboard": "Go to Dashboard",
+    "getStartedNow": "Get Started Now",
+    "professionalSolution": "Professional Solution",
+    "hero": {
+      "title": "Professional Crane Inspections",
+      "description": "Manage your crane inspections with a complete solution: PDF reports, integrated photos, team management, and regulatory compliance."
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "Everything you need to efficiently manage your inspections",
+      "secureInspections": {
+        "title": "Secure Inspections",
+        "description": "Robust inspection system with authentication and access control"
+      },
+      "integratedPhotos": {
+        "title": "Integrated Photos",
+        "description": "Upload and organize photos directly in your reports"
+      },
+      "pdfReports": {
+        "title": "PDF Reports",
+        "description": "Generate professional reports with your logo and data"
+      },
+      "teamManagement": {
+        "title": "Team Management",
+        "description": "Manage administrators and technicians with specific permissions"
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Get started with Crane Inspect Pro in 3 simple steps",
+      "createAccount": {
+        "title": "Create your account",
+        "description": "Sign up and configure your organization"
+      },
+      "addClients": {
+        "title": "Add your clients",
+        "description": "Import or create your client records with all necessary information"
+      },
+      "scheduleInspections": {
+        "title": "Schedule inspections",
+        "description": "Plan and assign inspections to your technicians"
+      }
+    },
+    "cta": {
+      "title": "Ready to modernize your inspections?",
+      "subtitle": "Join the professionals who trust Crane Inspect Pro"
+    },
+    "footer": {
+      "allRightsReserved": "All rights reserved."
+    }
+  }
 }

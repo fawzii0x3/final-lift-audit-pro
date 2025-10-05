@@ -1,3 +1,61 @@
 {
-  "welcome": "Bienvenue à React + Vite + i18n!"
+  "welcome": "Bienvenue à React + Vite + i18n!",
+  "landing": {
+    "brand": "Crane Inspect Pro",
+    "language": "Français",
+    "dashboard": "Tableau de bord",
+    "signIn": "Connexion",
+    "getStarted": "Commencer gratuitement",
+    "viewDemo": "Voir la démo",
+    "goToDashboard": "Aller au tableau de bord",
+    "getStartedNow": "Commencer maintenant",
+    "professionalSolution": "Solution professionnelle",
+    "hero": {
+      "title": "Inspections de grues professionnelles",
+      "description": "Gérez vos inspections de grues avec une solution complète : rapports PDF, photos intégrées, gestion d'équipe et conformité réglementaire."
+    },
+    "features": {
+      "title": "Fonctionnalités principales",
+      "subtitle": "Tout ce dont vous avez besoin pour gérer efficacement vos inspections",
+      "secureInspections": {
+        "title": "Inspections sécurisées",
+        "description": "Système d'inspection robuste avec authentification et contrôle d'accès"
+      },
+      "integratedPhotos": {
+        "title": "Photos intégrées",
+        "description": "Téléchargez et organisez des photos directement dans vos rapports"
+      },
+      "pdfReports": {
+        "title": "Rapports PDF",
+        "description": "Générez des rapports professionnels avec votre logo et vos données"
+      },
+      "teamManagement": {
+        "title": "Gestion d'équipe",
+        "description": "Gérez les administrateurs et techniciens avec des permissions spécifiques"
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "subtitle": "Commencez à utiliser Crane Inspect Pro en 3 étapes simples",
+      "createAccount": {
+        "title": "Créer votre compte",
+        "description": "Inscrivez-vous et configurez votre organisation"
+      },
+      "addClients": {
+        "title": "Ajouter vos clients",
+        "description": "Importez ou créez vos fiches clients avec toutes les informations nécessaires"
+      },
+      "scheduleInspections": {
+        "title": "Programmer des inspections",
+        "description": "Planifiez et assignez des inspections à vos techniciens"
+      }
+    },
+    "cta": {
+      "title": "Prêt à moderniser vos inspections ?",
+      "subtitle": "Rejoignez les professionnels qui font confiance à Crane Inspect Pro"
+    },
+    "footer": {
+      "allRightsReserved": "Tous droits réservés."
+    }
+  }
 }
