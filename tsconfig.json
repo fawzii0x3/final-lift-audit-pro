@@ -14,5 +14,6 @@
       "@/*": ["./src/*"],
       "@modules/*": ["./modules/*"],
     }
-  }
+  },
+  "lib": ["WebWorker"]
 }

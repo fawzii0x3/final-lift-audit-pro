@@ -1,28 +1,28 @@
-import {QueryClient} from '@tanstack/react-query'
-import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client'
-import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister'
-import type {PropsWithChildren} from "react";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import type { PropsWithChildren } from "react";
 
 const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            gcTime: 1000 * 60 * 60 * 24, // 24 hours
-        },
+  defaultOptions: {
+    queries: {
+      networkMode: "offlineFirst",
+      gcTime: 1000 * 60 * 60 * 24,
     },
-})
+  },
+});
 
 const asyncStoragePersister = createAsyncStoragePersister({
-    storage: window.localStorage,
-})
+  storage: window.localStorage,
+});
 
-export function TanStackProvider({children}: PropsWithChildren) {
-    return (
-        <PersistQueryClientProvider
-            client={queryClient}
-            persistOptions={{persister: asyncStoragePersister}}
-        >
-            {children}
-        </PersistQueryClientProvider>
-    )
+export function TanStackProvider({ children }: PropsWithChildren) {
+  return (
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister }}
+    >
+      {children}
+    </PersistQueryClientProvider>
+  );
 }
-
