@@ -94,10 +94,10 @@ export function useCreateArrayForm<Schema extends ZodSchema>(
     ArrayName extends ArrayPath<TypeOf<Schema>>,
   >(
     arrayName: ArrayName,
+    index: number,
     fieldName: Path<TypeOf<Schema>[ArrayName][number]>,
     type: TYPE,
     props: FieldProps[TYPE],
-    index: number,
   ) {
     return (
       <Controller

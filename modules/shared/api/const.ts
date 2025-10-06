@@ -5,4 +5,7 @@ export const QueryKeys = {
   INSPECTIONS: "inspections",
   ATTACHMENTS: "attachments",
   IMAGE_URL: "imageUrl",
+  INSPECTION_EQUIPMENT: "equipment",
+  INSPECTION_HOISTS: "hoists",
+  INSPECTION_TROLLEYS: "trolleys",
 };
