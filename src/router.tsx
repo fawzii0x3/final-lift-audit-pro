@@ -1,17 +1,29 @@
 import { createBrowserRouter } from "react-router";
-import { AppLayout } from "@modules/shared/Layouts/AppLayout.tsx";
-import { ProtectedRoute } from "@modules/shared/components/ProtectedRoute.tsx";
 import { Auth } from "@modules/auth/screens";
 import { Landing } from "@modules/shared/screens/Landing.tsx";
+import { Dashboard } from "@modules/shared/screens/Dashboard.tsx";
+import { ProtectedRoot } from "@modules/shared/Layouts/ProtectedRoot.tsx";
+import { ProtectedRootWrapper } from "@modules/shared/components/ProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <AppLayout>Hello World</AppLayout>
-      </ProtectedRoute>
-    ),
+    Component: ProtectedRoot,
+    children: [
+      {
+        index: true,
+        Component: Dashboard,
+      },
+      {
+        path: "/clients",
+        Component: () => <div>Clients</div>,
+      },
+    ],
+  },
+  {
+    path: "/inspections/new",
+    Component: ProtectedRootWrapper,
+    children: [{ index: true, element: <div>New Inspection</div> }],
   },
   {
     path: "/landing",

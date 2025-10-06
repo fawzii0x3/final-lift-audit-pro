@@ -1,7 +1,7 @@
 import { type PropsWithChildren, use } from "react";
 import { AuthContext } from "../auth/context";
 import { useProfile } from "../api";
-import { Navigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
 export function ProtectedRoute({ children }: PropsWithChildren) {
   const { user, loading: authLoading } = use(AuthContext);
@@ -27,5 +27,13 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
     return <Navigate to="/onboarding" replace />;
   }
 
-  return <>{children}</>;
+  return children;
+}
+
+export function ProtectedRootWrapper() {
+  return (
+    <ProtectedRoute>
+      <Outlet />
+    </ProtectedRoute>
+  );
 }
