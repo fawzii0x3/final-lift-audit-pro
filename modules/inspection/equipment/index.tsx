@@ -1,14 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ImageUpload } from "@/components/ui/image-upload";
 import { EquipmentSchema } from "./hooks.ts";
 import { equipmentTypes } from "@modules/shared/types";
 import { useCreateForm } from "@modules/shared/components";
@@ -32,6 +23,58 @@ export function EquipmentScreen() {
     disabled: false,
   });
 
+  const ManufacturerField = createField("manufacturer", "text", {
+    label: "Manufacturier",
+    disabled: false,
+  });
+
+  const ModelField = createField("model", "text", {
+    label: "Modèle",
+    disabled: false,
+  });
+
+  const SerialField = createField("serial", "text", {
+    label: "Numéro de série",
+    disabled: false,
+  });
+
+  const CapacityField = createField("capacity", "text", {
+    label: "Capacité",
+    placeholder: "5, 10, 15, 5 tonnes, 10T...",
+    disabled: false,
+  });
+
+  const HeightFtField = createField("height_ft", "text", {
+    label: "Hauteur (pi)",
+    type: "number",
+    step: "0.1",
+    min: "0",
+    disabled: false,
+  });
+
+  const OrderedByField = createField("ordered_by", "text", {
+    label: "Commandé par",
+    disabled: false,
+  });
+
+  const PowerVoltageField = createField("power_voltage", "text", {
+    label: "Voltage de puissance",
+    placeholder: "480V",
+    disabled: false,
+  });
+
+  const ControlVoltageField = createField("control_voltage", "text", {
+    label: "Voltage de commande",
+    placeholder: "120V",
+    disabled: false,
+  });
+
+  const LocationLabelField = createField("location_label", "text", {
+    label: "Emplacement",
+    placeholder: "Building A, Bay 3",
+    disabled: false,
+  });
+
   return (
     <Card>
       <CardHeader>
@@ -42,145 +85,15 @@ export function EquipmentScreen() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TypeField}
             {EquipmentNumberField}
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="manufacturer"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Manufacturier</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="model"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Modèle</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="serial"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Numéro de série</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="capacity"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Capacité</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input*/}
-            {/*          placeholder="5, 10, 15, 5 tonnes, 10T..."*/}
-            {/*          {...field}*/}
-            {/*        />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="height_ft"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Hauteur (pi)</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input*/}
-            {/*          type="number"*/}
-            {/*          step="0.1"*/}
-            {/*          min="0"*/}
-            {/*          {...field}*/}
-            {/*          onChange={(e) =>*/}
-            {/*            field.onChange(*/}
-            {/*              e.target.value*/}
-            {/*                ? parseFloat(e.target.value)*/}
-            {/*                : undefined,*/}
-            {/*            )*/}
-            {/*          }*/}
-            {/*        />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="ordered_by"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Commandé par</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="power_voltage"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Voltage de puissance</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} placeholder="480V" />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="control_voltage"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Voltage de commande</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} placeholder="120V" />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
-
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="location_label"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem className="md:col-span-2">*/}
-            {/*      <FormLabel>Emplacement</FormLabel>*/}
-            {/*      <FormControl>*/}
-            {/*        <Input {...field} placeholder="Building A, Bay 3" />*/}
-            {/*      </FormControl>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
+            {ManufacturerField}
+            {ModelField}
+            {SerialField}
+            {CapacityField}
+            {HeightFtField}
+            {OrderedByField}
+            {PowerVoltageField}
+            {ControlVoltageField}
+            <div className="md:col-span-2">{LocationLabelField}</div>
           </div>
 
           <div className="flex justify-end pt-6 border-t">
@@ -192,6 +105,7 @@ export function EquipmentScreen() {
             {/*    ? "Sauvegarde..."*/}
             {/*    : "Sauvegarder & Suivant"}*/}
             {/*</Button>*/}
+            <Button type="submit">Sauvegarder & Suivant</Button>
           </div>
         </Form>
       </CardContent>
