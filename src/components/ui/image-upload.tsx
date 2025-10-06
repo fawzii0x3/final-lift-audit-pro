@@ -10,7 +10,7 @@ import {
   getImageUrl,
   uploadImage,
   removeImage,
-} from "@modules/shared/api/image.tsx";
+} from "@modules/shared/api/image";
 
 interface ImageUploadProps {
   value?: string;

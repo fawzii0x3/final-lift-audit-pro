@@ -1,5 +1,7 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@modules/shared/supabase";
+import { QueryKeys } from "./const";
 
 export interface UploadOptions {
   bucket?: string;
@@ -14,6 +16,17 @@ export interface UploadResult {
   path: string;
   signedUrl: string | null;
   attachmentId?: string;
+}
+
+export interface Attachment {
+  id: string;
+  inspection_id: string;
+  org_id: string;
+  storage_path: string;
+  context: string;
+  check_item_id: string | null;
+  uploaded_by: string;
+  created_at: string;
 }
 
 class ImageUploadService {
@@ -169,6 +182,27 @@ class ImageUploadService {
   }
 
   /**
+   * Get attachments for an inspection
+   */
+  async getAttachments(
+    inspectionId: string,
+    context?: string,
+  ): Promise<Attachment[]> {
+    const { data, error } = await supabase
+      .from("attachments")
+      .select("*")
+      .eq("inspection_id", inspectionId)
+      .eq(context ? "context" : "id", context || "id")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to fetch attachments: ${error.message}`);
+    }
+
+    return data || [];
+  }
+
+  /**
    * Validate file before upload
    */
   private validateFile(file: File, options: Required<UploadOptions>): void {
@@ -207,7 +241,154 @@ class ImageUploadService {
 // Export singleton instance
 export const imageUploadService = new ImageUploadService();
 
-// Export convenience functions
+// React Query Hooks
+
+/**
+ * Hook to upload an image
+ */
+export function useUploadImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      file,
+      options,
+    }: {
+      file: File;
+      options?: UploadOptions;
+    }) => {
+      const result = await imageUploadService.uploadImage(file, options);
+      return result;
+    },
+    onSuccess: (_data, variables) => {
+      toast.success("Image uploaded successfully");
+
+      // Invalidate attachments query if inspectionId is provided
+      if (variables.options?.inspectionId) {
+        queryClient.invalidateQueries({
+          queryKey: [QueryKeys.ATTACHMENTS, variables.options.inspectionId],
+        });
+      }
+    },
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : "Failed to upload image";
+      toast.error(message);
+    },
+  });
+}
+
+/**
+ * Hook to remove an image
+ */
+export function useRemoveImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      path,
+      options,
+    }: {
+      path: string;
+      options?: UploadOptions;
+    }) => {
+      await imageUploadService.removeImage(path, options);
+    },
+    onSuccess: (_, variables) => {
+      toast.success("Image removed successfully");
+
+      // Invalidate attachments query if inspectionId is provided
+      if (variables.options?.inspectionId) {
+        queryClient.invalidateQueries({
+          queryKey: [QueryKeys.ATTACHMENTS, variables.options.inspectionId],
+        });
+      }
+    },
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : "Failed to remove image";
+      toast.error(message);
+    },
+  });
+}
+
+/**
+ * Hook to get signed URL for an image
+ */
+export function useImageUrl(path: string, bucket?: string, expiresIn?: number) {
+  return useQuery({
+    queryKey: [QueryKeys.IMAGE_URL, path, bucket, expiresIn],
+    queryFn: async () => {
+      return await imageUploadService.getSignedUrl(path, bucket, expiresIn);
+    },
+    enabled: !!path,
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+  });
+}
+
+/**
+ * Hook to get attachments for an inspection
+ */
+export function useAttachments(inspectionId: string, context?: string) {
+  return useQuery({
+    queryKey: [QueryKeys.ATTACHMENTS, inspectionId, context],
+    queryFn: async () => {
+      return await imageUploadService.getAttachments(inspectionId, context);
+    },
+    enabled: !!inspectionId,
+  });
+}
+
+/**
+ * Hook to get attachments with signed URLs
+ */
+export function useAttachmentsWithUrls(inspectionId: string, context?: string) {
+  const { data: attachments, ...rest } = useAttachments(inspectionId, context);
+
+  // Get all unique storage paths
+  const storagePaths =
+    attachments?.map((attachment) => attachment.storage_path) || [];
+  const uniquePaths = [...new Set(storagePaths)];
+
+  // Use a single query to get all signed URLs
+  const { data: urlData, isLoading: isLoadingUrls } = useQuery({
+    queryKey: [QueryKeys.IMAGE_URL, "multiple", uniquePaths],
+    queryFn: async () => {
+      const urlPromises = uniquePaths.map((path) =>
+        imageUploadService.getSignedUrl(path),
+      );
+      const urls = await Promise.all(urlPromises);
+      return urls;
+    },
+    enabled: uniquePaths.length > 0,
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  // Create a map of path to signed URL for quick lookup
+  const pathToUrlMap = new Map<string, string | null>();
+  uniquePaths.forEach((path, index) => {
+    pathToUrlMap.set(path, urlData?.[index] || null);
+  });
+
+  const attachmentsWithUrls = attachments?.map((attachment) => {
+    const signedUrl = pathToUrlMap.get(attachment.storage_path);
+    return {
+      ...attachment,
+      signedUrl,
+      isLoadingUrl: isLoadingUrls,
+    };
+  });
+
+  return {
+    attachments: attachmentsWithUrls,
+    ...rest,
+    isLoading: rest.isLoading || isLoadingUrls,
+  };
+}
+
+// Export convenience functions (for backward compatibility)
 export async function uploadImage(
   file: File,
   options?: UploadOptions,

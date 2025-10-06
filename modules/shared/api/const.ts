@@ -3,4 +3,6 @@ export const QueryKeys = {
   CLIENTS: "clients",
   TECHNICIANS: "technicians",
   INSPECTIONS: "inspections",
+  ATTACHMENTS: "attachments",
+  IMAGE_URL: "imageUrl",
 };
