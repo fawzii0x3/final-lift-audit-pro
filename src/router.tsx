@@ -1,15 +1,45 @@
 import { createBrowserRouter } from "react-router";
-import { Auth } from "@modules/auth/screens";
-import { Landing } from "@modules/shared/screens/Landing.tsx";
-import { Dashboard } from "@modules/shared/screens/Dashboard.tsx";
-import { ProtectedRoot } from "@modules/shared/Layouts/ProtectedRoot.tsx";
-import { ProtectedRoute } from "@modules/shared/components/ProtectedRoute.tsx";
-import { InspectionNew } from "@modules/inspection/base.tsx";
-import { ClientInfo } from "@modules/inspection/client";
+import { lazy } from "react";
+import { Routes } from "@modules/shared/routes";
+
+// Lazy imports
+const Auth = lazy(() =>
+  import("@modules/auth/screens").then((module) => ({ default: module.Auth })),
+);
+const Landing = lazy(() =>
+  import("@modules/shared/screens/Landing.tsx").then((module) => ({
+    default: module.Landing,
+  })),
+);
+const Dashboard = lazy(() =>
+  import("@modules/shared/screens/Dashboard.tsx").then((module) => ({
+    default: module.Dashboard,
+  })),
+);
+const ProtectedRoot = lazy(() =>
+  import("@modules/shared/Layouts/ProtectedRoot.tsx").then((module) => ({
+    default: module.ProtectedRoot,
+  })),
+);
+const ProtectedRoute = lazy(() =>
+  import("@modules/shared/components/ProtectedRoute.tsx").then((module) => ({
+    default: module.ProtectedRoute,
+  })),
+);
+const InspectionNew = lazy(() =>
+  import("@modules/inspection/base.tsx").then((module) => ({
+    default: module.InspectionNew,
+  })),
+);
+const ClientInfo = lazy(() =>
+  import("@modules/inspection/client").then((module) => ({
+    default: module.ClientInfo,
+  })),
+);
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: Routes.DASHBOARD,
     Component: ProtectedRoot,
     children: [
       {
@@ -17,13 +47,13 @@ export const router = createBrowserRouter([
         Component: Dashboard,
       },
       {
-        path: "/clients",
+        path: Routes.CLIENTS,
         Component: () => <div>Clients</div>,
       },
     ],
   },
   {
-    path: "/inspections/new",
+    path: Routes.INSPECTIONS.NEW,
     Component: () => (
       <ProtectedRoute>
         <InspectionNew />

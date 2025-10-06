@@ -2,20 +2,19 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { InspectionStepper } from "./components/stepper";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { useDraftCompletedSteps } from "./store.ts";
+import { useCurrentStep } from "./helper.ts";
 
 export function InspectionNew() {
   const navigate = useNavigate();
-  const location = useLocation();
-  console.log({ location });
-  const step = parseInt(location.pathname.split("/").pop() || "1", 10);
+  const step = useCurrentStep();
   const { completedSteps } = useDraftCompletedSteps();
   return (
     <div className="min-h-screen bg-background">
       <InspectionStepper
         currentStep={step}
-        onStepClick={(step) => {}}
+        onStepClick={(_) => {}}
         completedSteps={completedSteps}
       />
       <div className="container py-6">
