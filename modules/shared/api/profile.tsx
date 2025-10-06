@@ -55,10 +55,14 @@ export function useProfile() {
   });
   const profile = data?.profile;
   const needsOnboarding = data?.needsOnboarding;
-  console.log({ profile, needsOnboarding });
   return {
     profile,
     needsOnboarding,
     ...result,
   };
+}
+
+export function useOrgId() {
+  const { profile } = useProfile();
+  return profile?.org_id;
 }
