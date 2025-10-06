@@ -1,41 +1,17 @@
-import { createBrowserRouter } from "react-router";
-import { lazy } from "react";
+import { createBrowserRouter, Navigate } from "react-router";
 import { Routes } from "@modules/shared/routes";
-
-// Lazy imports
-const Auth = lazy(() =>
-  import("@modules/auth/screens").then((module) => ({ default: module.Auth })),
-);
-const Landing = lazy(() =>
-  import("@modules/shared/screens/Landing.tsx").then((module) => ({
-    default: module.Landing,
-  })),
-);
-const Dashboard = lazy(() =>
-  import("@modules/shared/screens/Dashboard.tsx").then((module) => ({
-    default: module.Dashboard,
-  })),
-);
-const ProtectedRoot = lazy(() =>
-  import("@modules/shared/Layouts/ProtectedRoot.tsx").then((module) => ({
-    default: module.ProtectedRoot,
-  })),
-);
-const ProtectedRoute = lazy(() =>
-  import("@modules/shared/components/ProtectedRoute.tsx").then((module) => ({
-    default: module.ProtectedRoute,
-  })),
-);
-const InspectionNew = lazy(() =>
-  import("@modules/inspection/base.tsx").then((module) => ({
-    default: module.InspectionNew,
-  })),
-);
-const ClientInfo = lazy(() =>
-  import("@modules/inspection/client").then((module) => ({
-    default: module.ClientInfo,
-  })),
-);
+import { Auth } from "@modules/auth/screens";
+import { Landing } from "@modules/shared/screens/Landing";
+import { Dashboard } from "@modules/shared/screens/Dashboard";
+import { ProtectedRoot } from "@modules/shared/Layouts/ProtectedRoot";
+import { ProtectedRoute } from "@modules/shared/components/ProtectedRoute";
+import { InspectionNew } from "@modules/inspection/base";
+import { ClientInfo } from "@modules/inspection/client";
+import { EquipmentScreen } from "@modules/inspection/equipment";
+import { HoistScreen } from "@modules/inspection/hoists";
+import { TrolleyScreen } from "@modules/inspection/trolley";
+import { VerificationScreen } from "@modules/inspection/verification";
+import { PreviewScreen } from "@modules/inspection/preview";
 
 export const router = createBrowserRouter([
   {
@@ -53,13 +29,42 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: Routes.INSPECTIONS.NEW,
+    path: Routes.INSPECTION_NEW_BASE,
     Component: () => (
       <ProtectedRoute>
         <InspectionNew />
       </ProtectedRoute>
     ),
-    children: [{ index: true, Component: ClientInfo }],
+    children: [
+      {
+        index: true,
+        element: <Navigate to={Routes.INSPECTIONS_NEW.CLIENTS} replace />,
+      },
+      {
+        path: Routes.INSPECTIONS_NEW.CLIENTS,
+        Component: ClientInfo,
+      },
+      {
+        path: Routes.INSPECTIONS_NEW.EQUIPMENT,
+        Component: EquipmentScreen,
+      },
+      {
+        path: Routes.INSPECTIONS_NEW.HOIST,
+        Component: HoistScreen,
+      },
+      {
+        path: Routes.INSPECTIONS_NEW.TROLLEY,
+        Component: TrolleyScreen,
+      },
+      {
+        path: Routes.INSPECTIONS_NEW.VERIFICATION,
+        Component: VerificationScreen,
+      },
+      {
+        path: Routes.INSPECTIONS_NEW.PREVIEW,
+        Component: PreviewScreen,
+      },
+    ],
   },
   {
     path: "/landing",

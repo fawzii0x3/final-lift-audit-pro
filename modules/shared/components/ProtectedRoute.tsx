@@ -2,10 +2,11 @@ import { type PropsWithChildren, use } from "react";
 import { AuthContext } from "../auth/context";
 import { useProfile } from "../api";
 import { Navigate, Outlet } from "react-router";
-
+// TODO : add when onboarding is ready
 export function ProtectedRoute({ children }: PropsWithChildren) {
   const { user, loading: authLoading } = use(AuthContext);
-  const { needsOnboarding, isLoading: profileLoading } = useProfile();
+  // const { needsOnboarding, isLoading: profileLoading } = useProfile();
+  const { isLoading: profileLoading } = useProfile();
   const loading = authLoading || profileLoading;
 
   if (loading) {
@@ -23,9 +24,9 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
     return <Navigate to="/auth" replace />;
   }
 
-  if (needsOnboarding) {
-    return <Navigate to="/onboarding" replace />;
-  }
+  // if (needsOnboarding) {
+  //   return <Navigate to="/onboarding" replace />;
+  // }
 
   return children;
 }

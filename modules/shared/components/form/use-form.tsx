@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { ComponentProps } from "react";
 import { type TypeOf, z } from "zod";
 import {
   Controller,
@@ -14,6 +14,11 @@ import { Form } from "@/components/ui/form";
 type ZodSchema = z.Schema;
 
 type FieldName<Schema extends ZodSchema> = Path<TypeOf<Schema>>;
+
+interface DynamicFormProps<Schema extends ZodSchema>
+  extends Omit<ComponentProps<"form">, "onSubmit"> {
+  submitHandler: SubmitHandler<TypeOf<Schema>>;
+}
 
 export function useCreateForm<Schema extends ZodSchema>(
   schema: Schema,
@@ -40,13 +45,10 @@ export function useCreateForm<Schema extends ZodSchema>(
       />
     );
   }
-  function DynamicForm({
-    submitHandler,
-    children,
-  }: PropsWithChildren<{ submitHandler: SubmitHandler<TypeOf<Schema>> }>) {
+  function DynamicForm({ submitHandler, ...props }: DynamicFormProps<Schema>) {
     return (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(submitHandler)}>{children}</form>
+        <form {...props} onSubmit={form.handleSubmit(submitHandler)} />
       </Form>
     );
   }

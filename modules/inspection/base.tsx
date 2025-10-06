@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { InspectionStepper } from "./components/stepper";
 import { Outlet, useNavigate } from "react-router";
 import { useDraftCompletedSteps } from "./store.ts";
-import { useCurrentStep } from "./helper.ts";
+import { useCurrentStep, StepPaths } from "./helper.ts";
 
 export function InspectionNew() {
   const navigate = useNavigate();
@@ -14,7 +14,12 @@ export function InspectionNew() {
     <div className="min-h-screen bg-background">
       <InspectionStepper
         currentStep={step}
-        onStepClick={(_) => {}}
+        onStepClick={(step) => {
+          const path = StepPaths[step];
+          if (path) {
+            navigate(path);
+          }
+        }}
         completedSteps={completedSteps}
       />
       <div className="container py-6">
