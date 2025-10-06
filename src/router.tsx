@@ -3,8 +3,9 @@ import { Auth } from "@modules/auth/screens";
 import { Landing } from "@modules/shared/screens/Landing.tsx";
 import { Dashboard } from "@modules/shared/screens/Dashboard.tsx";
 import { ProtectedRoot } from "@modules/shared/Layouts/ProtectedRoot.tsx";
-import { ProtectedRootWrapper } from "@modules/shared/components/ProtectedRoute.tsx";
+import { ProtectedRoute } from "@modules/shared/components/ProtectedRoute.tsx";
 import { InspectionNew } from "@modules/inspection/base.tsx";
+import { ClientInfo } from "@modules/inspection/client";
 
 export const router = createBrowserRouter([
   {
@@ -23,8 +24,12 @@ export const router = createBrowserRouter([
   },
   {
     path: "/inspections/new",
-    Component: ProtectedRootWrapper,
-    children: [{ index: true, Component: InspectionNew }],
+    Component: () => (
+      <ProtectedRoute>
+        <InspectionNew />
+      </ProtectedRoute>
+    ),
+    children: [{ index: true, Component: ClientInfo }],
   },
   {
     path: "/landing",

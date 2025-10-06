@@ -10,9 +10,11 @@
     "preview": "vite preview",
     "lint:fix": "eslint . --fix",
     "ts:check": "tsc --noEmit -p tsconfig.app.json",
-    "generate:supabse": "npx supabase gen types typescript --project-id 'jhntfxaiibezgldwyjzp' --schema public > modules/shared/supabase/database.types.ts"
+    "generate:supabse": "npx supabase gen types typescript --project-id 'jhntfxaiibezgldwyjzp' --schema public > modules/shared/supabase/database.types.ts",
+    "gen:store": "plop --plopfile ./generators/plop/plopfile.js"
   },
   "dependencies": {
+    "plop": "^4.0.4",
     "@hookform/resolvers": "4",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.1.10",

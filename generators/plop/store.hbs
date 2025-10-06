@@ -1,0 +1,49 @@
+import { create } from 'zustand';
+import type { StateCreator } from 'zustand';
+{{#if needsPersist}}
+    import { persist } from 'zustand/middleware';
+    import { jsonStorage } from '#/lib/storage';
+{{/if}}
+
+interface I{{pascalCase storeName}}StoreState {
+{{#each stateProperties as |prop|}}
+    {{prop}}: any;
+{{/each}}
+}
+
+export interface I{{pascalCase storeName}}Store extends I{{pascalCase storeName}}StoreState {
+clear: () => void;
+{{#each stateProperties as |prop|}}
+    set{{pascalCase prop}}: ({{prop}}: any) => void;
+{{/each}}
+}
+
+const initialState: I{{pascalCase storeName}}StoreState = {
+{{#each stateProperties as |prop|}}
+    {{prop}}: null,
+{{/each}}
+};
+
+const {{camelCase storeName}}State: StateCreator<I{{storeNameCC storeName}}> = (set) => ({
+    ...initialState,
+    clear: () => {
+    set(initialState);
+    },
+{{#each stateProperties as |prop|}}
+        set{{pascalCase prop}}: ({{prop}}) => {
+        set({ {{prop}} });
+        },
+{{/each}}
+    });
+
+    export const {{pascalCase storeName}}Store = create(
+{{#if needsPersist}}
+        persist({{camelCase storeName}}State, {
+        name: '{{kebabCase storeName}}-store',
+        storage: jsonStorage,
+        })
+{{else}}
+    {{camelCase storeName}}State
+{{/if}}
+    );
+

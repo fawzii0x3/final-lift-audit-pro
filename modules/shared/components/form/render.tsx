@@ -66,7 +66,7 @@ export type ControllerRender<Schema extends ZodSchema> = {
   formState: UseFormStateReturn<FieldValues>;
 };
 
-interface RenderProps<TYPE extends FieldType> {
+export interface RenderProps<TYPE extends FieldType> {
   type: TYPE;
   props: FieldProps[TYPE];
 }

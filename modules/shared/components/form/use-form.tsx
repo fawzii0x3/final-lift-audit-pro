@@ -1,4 +1,4 @@
-import type { ComponentProps, PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { type TypeOf, z } from "zod";
 import {
   Controller,
@@ -8,25 +8,9 @@ import {
   type UseFormProps,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RenderField } from "./render";
+import { type FieldProps, type FieldType, RenderField } from "./render";
 import { Form } from "@/components/ui/form";
 
-interface TextFieldProps extends ComponentProps<"input"> {
-  label: string;
-}
-interface SelectFieldProps {
-  label: string;
-  data: { label: string; value: string; key: string }[];
-  disabled?: boolean;
-  readonly: boolean;
-  placeholder?: string;
-}
-
-type FieldProps = {
-  text: TextFieldProps;
-  select: SelectFieldProps;
-};
-type FieldType = keyof FieldProps;
 type ZodSchema = z.Schema;
 
 type FieldName<Schema extends ZodSchema> = Path<TypeOf<Schema>>;
@@ -62,7 +46,7 @@ export function useCreateForm<Schema extends ZodSchema>(
   }: PropsWithChildren<{ submitHandler: SubmitHandler<TypeOf<Schema>> }>) {
     return (
       <Form {...form}>
-        <form onSubmit={submitHandler}>{children}</form>
+        <form onSubmit={form.handleSubmit(submitHandler)}>{children}</form>
       </Form>
     );
   }

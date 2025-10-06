@@ -20,7 +20,7 @@ export function ClientInfo() {
       key: client.id,
     })),
     placeholder: "Sélectionner un client (optionnel)",
-    label: "Client ID",
+    label: "Client",
     disabled: false,
     readonly: false,
   });
@@ -41,7 +41,7 @@ export function ClientInfo() {
     placeholder: "Sélectionner une date",
     disabled: false,
     readonly: false,
-    minDate: new Date(),
+    minDate: undefined,
     maxDate: new Date("2100-01-01"),
   });
   async function handleSubmit(data: z.infer<typeof DraftInspectionSchema>) {

@@ -2,47 +2,50 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { InspectionStepper } from "./components/stepper";
-import { ClientInfo } from "./client";
-import { useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import { useDraftCompletedSteps } from "./store.ts";
 
 export function InspectionNew() {
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log({ location });
+  const step = parseInt(location.pathname.split("/").pop() || "1", 10);
+  const { completedSteps } = useDraftCompletedSteps();
   return (
     <div className="min-h-screen bg-background">
       <InspectionStepper
-        currentStep={0}
+        currentStep={step}
         onStepClick={(step) => {}}
-        completedSteps={[0]}
+        completedSteps={completedSteps}
       />
       <div className="container py-6">
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => navigate("/inspections")}>
+          <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour aux inspections
           </Button>
+          {/*<div className="flex items-center space-x-2">*/}
+          {/*  <Button variant="outline" onClick={clearDraft} disabled={loading}>*/}
+          {/*    Effacer le brouillon*/}
+          {/*  </Button>*/}
 
-          <div className="flex items-center space-x-2">
-            {/*<Button variant="outline" onClick={clearDraft} disabled={loading}>*/}
-            {/*  Effacer le brouillon*/}
-            {/*</Button>*/}
-
-            {/*{draft.currentStep > 1 && (*/}
-            {/*  <Button*/}
-            {/*    variant="outline"*/}
-            {/*    onClick={handlePrevious}*/}
-            {/*    disabled={loading}*/}
-            {/*  >*/}
-            {/*    <ArrowLeft className="mr-2 h-4 w-4" />*/}
-            {/*    Précédent*/}
-            {/*  </Button>*/}
-            {/*)}*/}
-          </div>
+          {/*  {step > 1 && (*/}
+          {/*    <Button*/}
+          {/*      variant="outline"*/}
+          {/*      onClick={handlePrevious}*/}
+          {/*      disabled={loading}*/}
+          {/*    >*/}
+          {/*      <ArrowLeft className="mr-2 h-4 w-4" />*/}
+          {/*      Précédent*/}
+          {/*    </Button>*/}
+          {/*  )}*/}
+          {/*</div>*/}
         </div>
 
         <div className="w-full">
           <Card>
             <CardContent className="p-6 w-full">
-              <ClientInfo />
+              <Outlet />
               {/*<div className="flex items-center justify-between mt-8 pt-6 border-t">*/}
               {/*  <Button*/}
               {/*    variant="outline"*/}
