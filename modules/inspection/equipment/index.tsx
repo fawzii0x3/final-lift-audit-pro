@@ -6,27 +6,36 @@ import { useCreateForm } from "@modules/shared/components";
 import { Routes } from "@modules/shared/routes";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
-import { useCreateInspectionEquipment } from "@modules/shared/api/inspection";
 import { useDraftEquipment, useDraftStepManagement } from "../store";
 import { z } from "zod";
 
 export function EquipmentScreen() {
   const navigate = useNavigate();
   const { inspectionId } = useParams<{ inspectionId: string }>();
-  const { mutateAsync: createEquipment, isPending } = useCreateInspectionEquipment();
-  const { setEquipment } = useDraftEquipment();
+  const { equipment, setEquipment } = useDraftEquipment();
   const { markStepCompleted } = useDraftStepManagement();
-  const { Form, createField } = useCreateForm(EquipmentSchema, {});
+  
+  // Use stored equipment data as default values
+  const defaultValues = {
+    equipment_type: equipment?.equipment_type || "",
+    equipment_number: equipment?.equipment_number || "",
+    manufacturer: equipment?.manufacturer || "",
+    model: equipment?.model || "",
+    serial: equipment?.serial || "",
+    capacity: equipment?.capacity || "",
+    height_ft: equipment?.height_ft || undefined,
+    ordered_by: equipment?.ordered_by || "",
+    power_voltage: equipment?.power_voltage || "",
+    control_voltage: equipment?.control_voltage || "",
+    location_label: equipment?.location_label || "",
+  };
+
+  const { Form, createField } = useCreateForm(EquipmentSchema, { defaultValues });
 
   const handleSubmit = async (data: z.infer<typeof EquipmentSchema>) => {
-    if (!inspectionId) {
-      toast.error("ID d'inspection manquant");
-      return;
-    }
-
     try {
       const equipmentData = {
-        inspection_id: inspectionId,
+        inspection_id: inspectionId || "",
         equipment_type: data.equipment_type,
         equipment_number: data.equipment_number || null,
         manufacturer: data.manufacturer || null,
@@ -42,8 +51,6 @@ export function EquipmentScreen() {
 
       // Store equipment data in the store
       setEquipment(equipmentData);
-
-      await createEquipment(equipmentData);
 
       // Mark equipment step as completed
       markStepCompleted(2); // Mark equipment step as completed
@@ -147,8 +154,8 @@ export function EquipmentScreen() {
           </div>
 
           <div className="flex justify-end pt-6 border-t">
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "Sauvegarde..." : "Sauvegarder & Suivant"}
+            <Button type="submit">
+              Sauvegarder & Suivant
             </Button>
           </div>
         </Form>

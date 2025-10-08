@@ -9,27 +9,74 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 import { HoistsSchema } from "@modules/inspection/hoists/schema.tsx";
 import { useCreateArrayForm } from "@modules/shared/components";
+import { useDraftHoists, useDraftStepManagement } from "../store";
+import { useNavigate, useParams } from "react-router";
+import { Routes } from "@modules/shared/routes";
+import { toast } from "sonner";
 
 export function HoistScreen() {
+  const navigate = useNavigate();
+  const { inspectionId } = useParams<{ inspectionId: string }>();
+  const { hoists, setHoists } = useDraftHoists();
+  const { markStepCompleted } = useDraftStepManagement();
+  
+  // Use stored hoists data as default values
+  const defaultValues = {
+    entries: hoists && hoists.length > 0 ? hoists.map(hoist => ({
+      position: hoist.position || "1",
+      hoist_type: hoist.hoist_type || undefined,
+      capacity: hoist.capacity || "",
+      manufacturer: hoist.manufacturer || "",
+      model: hoist.model || "",
+      serial: hoist.serial || "",
+      image_path: hoist.image_path || undefined,
+    })) : [
+      {
+        position: "1" as const,
+        hoist_type: undefined,
+        capacity: "",
+        manufacturer: "",
+        model: "",
+        serial: "",
+        image_path: undefined,
+      },
+    ],
+  };
+
   const { useArrayField, createArrayField, Form } = useCreateArrayForm(
     HoistsSchema,
-    {
-      defaultValues: {
-        entries: [
-          {
-            position: "1",
-            hoist_type: undefined,
-            capacity: "",
-            manufacturer: "",
-            model: "",
-            serial: "",
-            image_path: undefined,
-          },
-        ],
-      },
-    },
+    { defaultValues },
   );
   const { fields, append, remove } = useArrayField("entries");
+  
+  const handleSubmit = async (data: any) => {
+    try {
+      const hoistsData = data.entries.map((entry: any) => ({
+        inspection_id: inspectionId || "",
+        position: entry.position,
+        hoist_type: entry.hoist_type || null,
+        capacity: entry.capacity || null,
+        manufacturer: entry.manufacturer || null,
+        model: entry.model || null,
+        serial: entry.serial || null,
+        image_path: entry.image_path || null,
+      }));
+
+      // Store hoists data in the store
+      setHoists(hoistsData);
+
+      // Mark hoists step as completed
+      markStepCompleted(3); // Mark hoists step as completed
+
+      toast.success("Palans sauvegardés avec succès");
+      navigate(`${Routes.INSPECTIONS_NEW.TROLLEY}/${inspectionId}`);
+    } catch (error) {
+      console.error("Error saving hoists:", error);
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde des palans";
+      toast.error(errorMessage);
+    }
+  };
+
   const addHoist = () => {
     if (fields.length < 2) {
       const position = fields.length === 0 ? "1" : "2";
@@ -54,7 +101,7 @@ export function HoistScreen() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form submitHandler={() => {}} className="space-y-6">
+        <Form submitHandler={handleSubmit} className="space-y-6">
           {fields.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <p>Aucun palan ajouté pour le moment.</p>

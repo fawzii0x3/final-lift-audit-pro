@@ -10,30 +10,69 @@ import { Plus, Trash2 } from "lucide-react";
 
 import { trolleyEntriesSchema } from "./schema";
 import { useCreateArrayForm } from "@modules/shared/components";
+import { useDraftTrolleys, useDraftStepManagement } from "../store";
+import { useNavigate, useParams } from "react-router";
+import { Routes } from "@modules/shared/routes";
+import { toast } from "sonner";
 
 export function TrolleyScreen() {
+  const navigate = useNavigate();
+  const { inspectionId } = useParams<{ inspectionId: string }>();
+  const { trolleys, setTrolleys } = useDraftTrolleys();
+  const { markStepCompleted } = useDraftStepManagement();
+  
+  // Use stored trolleys data as default values
+  const defaultValues = {
+    entries: trolleys && trolleys.length > 0 ? trolleys.map(trolley => ({
+      position: trolley.position?.toString() || "1",
+      trolley_type: trolley.trolley_type || undefined,
+      manufacturer: trolley.manufacturer || "",
+      model: trolley.model || "",
+      serial: trolley.serial || "",
+      image_path: undefined, // Not in database schema
+    })) : [
+      {
+        position: "1" as const,
+        trolley_type: undefined,
+        manufacturer: "",
+        model: "",
+        serial: "",
+        image_path: undefined,
+      },
+    ],
+  };
+
   const { Form, useArrayField, createArrayField } = useCreateArrayForm(
     trolleyEntriesSchema,
-    {
-      defaultValues: {
-        entries: [
-          {
-            position: "1",
-            trolley_type: undefined,
-            manufacturer: "",
-            model: "",
-            serial: "",
-            image_path: undefined,
-          },
-        ],
-      },
-    },
+    { defaultValues },
   );
 
   const { fields, append, remove } = useArrayField("entries");
 
-  const onSubmit = async (formData: unknown) => {
-    console.log("Form submitted:", formData);
+  const handleSubmit = async (data: any) => {
+    try {
+      const trolleysData = data.entries.map((entry: any, index: number) => ({
+        inspection_id: inspectionId || "",
+        position: parseInt(entry.position) || (index + 1),
+        trolley_type: entry.trolley_type || null,
+        manufacturer: entry.manufacturer || null,
+        model: entry.model || null,
+        serial: entry.serial || null,
+      }));
+
+      // Store trolleys data in the store
+      setTrolleys(trolleysData);
+
+      // Mark trolleys step as completed
+      markStepCompleted(4); // Mark trolleys step as completed
+
+      toast.success("Chariots sauvegardés avec succès");
+      navigate(`${Routes.INSPECTIONS_NEW.VERIFICATION}/${inspectionId}`);
+    } catch (error) {
+      console.error("Error saving trolleys:", error);
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde des chariots";
+      toast.error(errorMessage);
+    }
   };
 
   const addTrolley = () => {
@@ -60,7 +99,7 @@ export function TrolleyScreen() {
       </CardHeader>
 
       <CardContent>
-        <Form submitHandler={onSubmit} className="space-y-6">
+        <Form submitHandler={handleSubmit} className="space-y-6">
           {fields.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <p>Aucun chariot ajouté pour le moment.</p>
