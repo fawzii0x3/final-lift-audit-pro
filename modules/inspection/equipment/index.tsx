@@ -81,7 +81,7 @@ export function EquipmentScreen() {
         <CardTitle>Équipement</CardTitle>
       </CardHeader>
       <CardContent>
-        <Form className="space-y-6" submitHandler={(_) => {}}>
+        <Form className="space-y-6" submitHandler={() => {}}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TypeField}
             {EquipmentNumberField}
