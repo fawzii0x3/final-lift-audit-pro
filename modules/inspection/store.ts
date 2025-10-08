@@ -10,12 +10,16 @@ type Step = number;
 type CompletedSteps = Step[];
 
 type EquipmentData = Database["public"]["Tables"]["inspection_equipment"]["Insert"];
+type HoistData = Database["public"]["Tables"]["inspection_hoists"]["Insert"];
+type TrolleyData = Database["public"]["Tables"]["inspection_trolleys"]["Insert"];
 
 interface IDraftStoreState {
   completedSteps: CompletedSteps;
   inspection: Optional<InspectionsInsert>;
   inspectionId: Optional<string>;
   equipment: Optional<EquipmentData>;
+  hoists: Optional<HoistData[]>;
+  trolleys: Optional<TrolleyData[]>;
 }
 
 export interface IDraftStore extends IDraftStoreState {
@@ -23,6 +27,8 @@ export interface IDraftStore extends IDraftStoreState {
   setInspection: (inspection: InspectionsInsert) => void;
   setInspectionId: (id: string) => void;
   setEquipment: (equipment: EquipmentData) => void;
+  setHoists: (hoists: HoistData[]) => void;
+  setTrolleys: (trolleys: TrolleyData[]) => void;
   setCompletedSteps: (steps: CompletedSteps) => void;
   markStepCompleted: (step: number) => void;
 }
@@ -31,6 +37,8 @@ const initialState: IDraftStoreState = {
   inspection: null,
   inspectionId: null,
   equipment: null,
+  hoists: null,
+  trolleys: null,
   completedSteps: [],
 };
 
@@ -47,6 +55,12 @@ const draftState: StateCreator<IDraftStore> = (set) => ({
   },
   setEquipment: (equipment) => {
     set({ equipment });
+  },
+  setHoists: (hoists) => {
+    set({ hoists });
+  },
+  setTrolleys: (trolleys) => {
+    set({ trolleys });
   },
   setCompletedSteps: (completedSteps) => {
     set({ completedSteps });
@@ -86,6 +100,22 @@ export function useDraftEquipment() {
   return {
     equipment,
     setEquipment,
+  };
+}
+
+export function useDraftHoists() {
+  const { hoists, setHoists } = useStore(DraftStore);
+  return {
+    hoists,
+    setHoists,
+  };
+}
+
+export function useDraftTrolleys() {
+  const { trolleys, setTrolleys } = useStore(DraftStore);
+  return {
+    trolleys,
+    setTrolleys,
   };
 }
 

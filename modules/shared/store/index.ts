@@ -14,18 +14,5 @@ export const zustandStorage: StateStorage = {
   },
 };
 
-// export const secureZustandStorage: StateStorage = {
-//   setItem: async (name, value) => {
-//     return await setItemAsync(name, value);
-//   },
-//   getItem: async (name) => {
-//     const value = await getItemAsync(name);
-//     return value ?? null;
-//   },
-//   removeItem: async (name) => {
-//     return deleteItemAsync(name);
-//   },
-// };
 
 export const jsonStorage = createJSONStorage(() => zustandStorage);
-// export const secureJsonStorage = createJSONStorage(() => secureZustandStorage);
