@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { useNavigate } from "react-router";
 import { useDeleteTechnician, useTechnicians } from "@modules/shared/api";
+import { Routes } from "@modules/shared/routes";
 
 export function Technicians() {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export function Technicians() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Techniciens</h1>
-        <Button onClick={() => navigate("/technicians/create")}>
+        <Button onClick={() => navigate(Routes.TECHNICIANS_CREATE)}>
           <UserPlus className="mr-2 h-4 w-4" />
           Créer un technicien
         </Button>
@@ -72,7 +73,7 @@ export function Technicians() {
             Commencez par créer le premier compte technicien pour votre
             organisation.
           </p>
-          <Button onClick={() => navigate("/technicians/create")}>
+          <Button onClick={() => navigate(Routes.TECHNICIANS_CREATE)}>
             <UserPlus className="mr-2 h-4 w-4" />
             Créer un technicien
           </Button>

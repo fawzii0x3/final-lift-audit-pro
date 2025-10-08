@@ -15,6 +15,7 @@ import { PreviewScreen } from "@modules/inspection/preview";
 import { Inspections } from "@modules/inspection/screen";
 import { ClientScreen } from "@modules/clients/screen";
 import { Technicians } from "@modules/techniciens/screen";
+import TechnicianCreate from "@modules/techniciens/create";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: Routes.TECHNICIANS,
         Component: Technicians,
+      },
+      {
+        path: Routes.TECHNICIANS_CREATE,
+        Component: TechnicianCreate,
       },
     ],
   },
