@@ -43,8 +43,8 @@ export function useCreatDraftInspection() {
       });
       
       toast.success("Inspection créée avec succès");
-      // Navigate to the next step (equipment)
-      navigate(Routes.INSPECTIONS_NEW.EQUIPMENT);
+      // Navigate to the next step (equipment) with inspectionId
+      navigate(Routes.INSPECTIONS_NEW.EQUIPMENT.replace(':inspectionId', result.id));
       
       return result;
     } catch (error) {

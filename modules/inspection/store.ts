@@ -13,6 +13,21 @@ type EquipmentData = Database["public"]["Tables"]["inspection_equipment"]["Inser
 type HoistData = Database["public"]["Tables"]["inspection_hoists"]["Insert"];
 type TrolleyData = Database["public"]["Tables"]["inspection_trolleys"]["Insert"];
 
+// Checklist item data type
+export interface ChecklistItemData {
+  id: string;
+  item_key: string;
+  component_type: "hoist" | "trolley" | "equipment";
+  component_name: string;
+  component_id?: string;
+  status: "unchecked" | "checked_ok" | "issue";
+  comment?: string;
+  image_path?: string;
+  problem_type?: string;
+  validation_image_path?: string;
+  validation_comment?: string;
+}
+
 interface IDraftStoreState {
   completedSteps: CompletedSteps;
   inspection: Optional<InspectionsInsert>;
@@ -20,6 +35,8 @@ interface IDraftStoreState {
   equipment: Optional<EquipmentData>;
   hoists: Optional<HoistData[]>;
   trolleys: Optional<TrolleyData[]>;
+  checklistItems: Optional<ChecklistItemData[][]>;
+  customItems: Optional<Array<{ key: string; title: string }>>;
 }
 
 export interface IDraftStore extends IDraftStoreState {
@@ -29,6 +46,9 @@ export interface IDraftStore extends IDraftStoreState {
   setEquipment: (equipment: EquipmentData) => void;
   setHoists: (hoists: HoistData[]) => void;
   setTrolleys: (trolleys: TrolleyData[]) => void;
+  setChecklistItems: (items: ChecklistItemData[][]) => void;
+  setCustomItems: (items: Array<{ key: string; title: string }>) => void;
+  updateChecklistItem: (itemId: string, updates: Partial<ChecklistItemData>) => void;
   setCompletedSteps: (steps: CompletedSteps) => void;
   markStepCompleted: (step: number) => void;
 }
@@ -39,6 +59,8 @@ const initialState: IDraftStoreState = {
   equipment: null,
   hoists: null,
   trolleys: null,
+  checklistItems: null,
+  customItems: null,
   completedSteps: [],
 };
 
@@ -61,6 +83,25 @@ const draftState: StateCreator<IDraftStore> = (set) => ({
   },
   setTrolleys: (trolleys) => {
     set({ trolleys });
+  },
+  setChecklistItems: (checklistItems) => {
+    set({ checklistItems });
+  },
+  setCustomItems: (customItems) => {
+    set({ customItems });
+  },
+  updateChecklistItem: (itemId, updates) => {
+    set((state) => {
+      if (!state.checklistItems) return state;
+      
+      const updatedItems = state.checklistItems.map((category) =>
+        category.map((item) =>
+          item.id === itemId ? { ...item, ...updates } : item
+        )
+      );
+      
+      return { checklistItems: updatedItems };
+    });
   },
   setCompletedSteps: (completedSteps) => {
     set({ completedSteps });
@@ -128,5 +169,22 @@ export function useDraftStepManagement() {
   const { markStepCompleted } = useStore(DraftStore);
   return {
     markStepCompleted,
+  };
+}
+
+export function useDraftChecklistItems() {
+  const { checklistItems, setChecklistItems, updateChecklistItem } = useStore(DraftStore);
+  return {
+    checklistItems,
+    setChecklistItems,
+    updateChecklistItem,
+  };
+}
+
+export function useDraftCustomItems() {
+  const { customItems, setCustomItems } = useStore(DraftStore);
+  return {
+    customItems,
+    setCustomItems,
   };
 }

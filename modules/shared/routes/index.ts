@@ -11,11 +11,11 @@ export const Routes = {
   LANDING: "/landing",
   AUTH: "/auth",
   INSPECTIONS_NEW: {
-    CLIENTS: `${INSPECTIONS_NEW_BASE}/client`,
-    EQUIPMENT: `${INSPECTIONS_NEW_BASE}/equipment`,
-    HOIST: `${INSPECTIONS_NEW_BASE}/hoist`,
-    TROLLEY: `${INSPECTIONS_NEW_BASE}/trolley`,
-    VERIFICATION: `${INSPECTIONS_NEW_BASE}/verification`,
-    PREVIEW: `${INSPECTIONS_NEW_BASE}/preview`,
+    CLIENTS: `${INSPECTIONS_NEW_BASE}/:inspectionId/client`,
+    EQUIPMENT: `${INSPECTIONS_NEW_BASE}/:inspectionId/equipment`,
+    HOIST: `${INSPECTIONS_NEW_BASE}/:inspectionId/hoist`,
+    TROLLEY: `${INSPECTIONS_NEW_BASE}/:inspectionId/trolley`,
+    VERIFICATION: `${INSPECTIONS_NEW_BASE}/:inspectionId/verification`,
+    PREVIEW: `${INSPECTIONS_NEW_BASE}/:inspectionId/preview`,
   },
 };

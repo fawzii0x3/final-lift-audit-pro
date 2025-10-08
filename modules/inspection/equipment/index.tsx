@@ -17,7 +17,7 @@ export function EquipmentScreen() {
   
   // Use stored equipment data as default values
   const defaultValues = {
-    equipment_type: equipment?.equipment_type || "",
+    equipment_type: (equipment?.equipment_type as any) || undefined,
     equipment_number: equipment?.equipment_number || "",
     manufacturer: equipment?.manufacturer || "",
     model: equipment?.model || "",
@@ -56,7 +56,7 @@ export function EquipmentScreen() {
       markStepCompleted(2); // Mark equipment step as completed
 
       toast.success("Équipement sauvegardé avec succès");
-      navigate(`${Routes.INSPECTIONS_NEW.HOIST}/${inspectionId}`);
+      navigate(Routes.INSPECTIONS_NEW.HOIST.replace(':inspectionId', inspectionId || ''));
     } catch (error) {
       console.error("Error saving equipment:", error);
       const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde de l'équipement";

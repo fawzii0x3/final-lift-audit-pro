@@ -113,15 +113,15 @@ export function ChecklistItem({
   );
 
   // Group components by type for table structure
-  const equipmentComponent = components.find(
+  const equipmentComponent = components?.find(
     (c) => c.component_type === "equipment",
   );
-  const hoistComponents = components.filter(
+  const hoistComponents = components?.filter(
     (c) => c.component_type === "hoist",
-  );
-  const trolleyComponents = components.filter(
+  ) || [];
+  const trolleyComponents = components?.filter(
     (c) => c.component_type === "trolley",
-  );
+  ) || [];
 
   const getTableCellContent = (component: ChecklistItemData | undefined) => {
     if (!component) {

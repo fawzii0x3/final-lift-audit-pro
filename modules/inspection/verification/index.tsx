@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useParams } from "react-router";
 import {
   Card,
   CardContent,
@@ -12,8 +13,8 @@ import {
 import { checkListSchema } from "./schema";
 import {
   ChecklistItem,
-  type ChecklistItemData,
 } from "../components/CheckListItem";
+import type { ChecklistItemData } from "../components/check-list-item/types";
 // import { StorageImage } from "@/components/ui/storage-image";
 import { Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
@@ -23,52 +24,32 @@ import {
 } from "@modules/shared/types";
 import { useCreateArrayForm } from "@modules/shared/components";
 import {
-  useEquipmentByInspectionId,
-  useHoistsByInspection,
-  useTrolleysByInspectionId,
-} from "@modules/shared/api";
+  useDraftEquipment,
+  useDraftHoists,
+  useDraftTrolleys,
+  useDraftChecklistItems,
+  useDraftCustomItems,
+  useDraftStepManagement,
+} from "../store";
 
 export function VerificationScreen() {
-  const data = [] as any;
-  const inspectionId = "ef19365d-5fda-429c-adcd-424bb4255b74";
+  const { inspectionId } = useParams<{ inspectionId: string }>();
   const [selectedComponent, setSelectedComponent] =
     useState<ChecklistItemData | null>(null);
-  const [selectedItemIndex, setSelectedItemIndex] = useState<number>(-1);
   const [customItemName, setCustomItemName] = useState("");
   const [showCustomItemForm, setShowCustomItemForm] = useState(false);
 
-  const { equipment, isLoading: equipmentLoading } =
-    useEquipmentByInspectionId(inspectionId);
-  const { hoists, isLoading: hoistsLoading } =
-    useHoistsByInspection(inspectionId);
-  const { trolleys, isLoading: trolleysLoading } =
-    useTrolleysByInspectionId(inspectionId);
+  const { equipment } = useDraftEquipment();
+  const { hoists } = useDraftHoists();
+  const { trolleys } = useDraftTrolleys();
+  const { checklistItems, setChecklistItems, updateChecklistItem } = useDraftChecklistItems();
+  const { customItems, setCustomItems } = useDraftCustomItems();
+  const { markStepCompleted } = useDraftStepManagement();
 
-  const dataLoading = equipmentLoading || hoistsLoading || trolleysLoading;
+  // No need to initialize customItems here - the store handles it
 
-  const [customItems, setCustomItems] = useState<
-    Array<{ key: string; title: string }>
-  >([]);
-
-  // Initialize custom items from saved data keys not in defaults
-  useEffect(() => {
-    if (data?.items) {
-      const defaultKeys = new Set(checklistCategories.map((c) => c.key));
-      const extraKeys = Array.from(
-        new Set(
-          data.items.map((i) => i.item_key).filter((k) => !defaultKeys.has(k)),
-        ),
-      );
-      if (extraKeys.length) {
-        setCustomItems(
-          extraKeys.map((k) => ({ key: k, title: k.replace(/_/g, " ") })),
-        );
-      }
-    }
-  }, [data?.items]);
-
-  function generateChecklistItems() {
-    const allCategories = [...checklistCategories, ...customItems];
+  const generateChecklistItems = useCallback(() => {
+    const allCategories = [...checklistCategories, ...(customItems || [])];
     const categories: ChecklistItemData[][] = [];
 
     allCategories.forEach((category) => {
@@ -78,142 +59,54 @@ export function VerificationScreen() {
           id: `${category.key}_equipment`,
           item_key: category.key,
           component_type: "equipment",
-          component_name: equipment.equipment_type,
+          component_name: equipment.equipment_type || "Équipement",
           status: "unchecked",
         });
       }
 
       // Add hoist items
-      hoists.forEach((hoist, index) => {
-        categoryItems.push({
-          id: `${category.key}_hoist_${hoist.id}`,
-          item_key: category.key,
-          component_type: "hoist",
-          component_name: `Palan ${index + 1}`,
-          component_id: hoist.id,
-          status: "unchecked",
+      if (hoists && hoists.length > 0) {
+        hoists.forEach((hoist, index) => {
+          categoryItems.push({
+            id: `${category.key}_hoist_${hoist.id || index}`,
+            item_key: category.key,
+            component_type: "hoist",
+            component_name: `Palan ${index + 1}`,
+            component_id: hoist.id,
+            status: "unchecked",
+          });
         });
-      });
+      }
 
       // Add trolley items
-      trolleys.forEach((trolley, index) => {
-        categoryItems.push({
-          id: `${category.key}_trolley_${trolley.id}`,
-          item_key: category.key,
-          component_type: "trolley",
-          component_name: `Chariot ${index + 1}`,
-          component_id: trolley.id,
-          status: "unchecked",
+      if (trolleys && trolleys.length > 0) {
+        trolleys.forEach((trolley, index) => {
+          categoryItems.push({
+            id: `${category.key}_trolley_${trolley.id || index}`,
+            item_key: category.key,
+            component_type: "trolley",
+            component_name: `Chariot ${index + 1}`,
+            component_id: trolley.id,
+            status: "unchecked",
+          });
         });
-      });
+      }
 
       categories.push(categoryItems);
     });
 
     return categories;
-  }
-
-  const [checklistItems, setChecklistItems] = useState<ChecklistItemData[][]>(
-    [],
-  );
+  }, [equipment, hoists, trolleys, customItems]);
 
   useEffect(() => {
-    if (!dataLoading && equipment) {
+    // Generate checklist items when we have equipment data from store
+    if (equipment && (!checklistItems || checklistItems.length === 0)) {
       const generatedItems = generateChecklistItems();
-
-      // If we have existing data, restore the saved states
-      if (data?.items && data.items.length > 0) {
-        const updatedItems = generatedItems.map((category) =>
-          category.map((item) => {
-            const existingItem = data.items.find(
-              (savedItem) =>
-                savedItem.item_key === item.item_key &&
-                savedItem.component ===
-                  (item.component_type === "equipment"
-                    ? "equipment"
-                    : item.component_type === "hoist"
-                      ? "palan"
-                      : "chariot") &&
-                (savedItem.component_id === item.component_id ||
-                  (item.component_type === "equipment" &&
-                    !savedItem.component_id)),
-            );
-
-            if (existingItem) {
-              return {
-                ...item,
-                component_name:
-                  existingItem.component_name || item.component_name, // Preserve custom component name
-                status: existingItem.status,
-                problem_type: existingItem.problem_type,
-                comment: existingItem.comment,
-                image_path: existingItem.validation_image_path,
-                validation_image_path: existingItem.validation_image_path,
-                validation_comment: existingItem.validation_comment,
-              };
-            }
-
-            return item;
-          }),
-        );
-        setChecklistItems(updatedItems);
-      } else {
-        setChecklistItems(generatedItems);
-      }
+      setChecklistItems(generatedItems);
     }
-  }, [equipment, hoists, trolleys, dataLoading, customItems]); // Removed 'data' from dependencies
+  }, [equipment, hoists, trolleys, customItems, generateChecklistItems, setChecklistItems]);
 
-  // Handle initial data loading without regenerating component names
-  useEffect(() => {
-    if (data?.items && data.items.length > 0 && checklistItems.length > 0) {
-      // Only update if we don't already have the data loaded
-      const hasExistingData = checklistItems
-        .flat()
-        .some(
-          (item) =>
-            item.status !== "unchecked" ||
-            item.comment ||
-            item.validation_image_path,
-        );
-
-      if (!hasExistingData) {
-        const updatedItems = checklistItems.map((category) =>
-          category.map((item) => {
-            const existingItem = data.items.find(
-              (savedItem: any) =>
-                savedItem.item_key === item.item_key &&
-                savedItem.component ===
-                  (item.component_type === "equipment"
-                    ? "equipment"
-                    : item.component_type === "hoist"
-                      ? "palan"
-                      : "chariot") &&
-                (savedItem.component_id === item.component_id ||
-                  (item.component_type === "equipment" &&
-                    !savedItem.component_id)),
-            );
-
-            if (existingItem) {
-              return {
-                ...item,
-                component_name:
-                  existingItem.component_name || item.component_name, // Preserve custom component name
-                status: existingItem.status,
-                problem_type: existingItem.problem_type,
-                comment: existingItem.comment,
-                image_path: existingItem.validation_image_path,
-                validation_image_path: existingItem.validation_image_path,
-                validation_comment: existingItem.validation_comment,
-              };
-            }
-
-            return item;
-          }),
-        );
-        setChecklistItems(updatedItems);
-      }
-    }
-  }, [data?.items, checklistItems.length]); // Only run when data.items changes or checklist is first loaded
+  // No need for data loading since we're using store data
 
   // Add custom item
   function addCustomItem() {
@@ -224,7 +117,7 @@ export function VerificationScreen() {
         .replace(/\s+/g, "_");
       const newCustomItem = { key: customKey, title: customItemName.trim() };
       const currentStates = new Map();
-      checklistItems.flat().forEach((item) => {
+      (checklistItems || []).flat().forEach((item) => {
         currentStates.set(item.id, {
           status: item.status,
           problem_type: item.problem_type,
@@ -235,7 +128,7 @@ export function VerificationScreen() {
       });
 
       // Add to custom items
-      setCustomItems((prev) => [...prev, newCustomItem]);
+      setCustomItems([...(customItems || []), newCustomItem]);
 
       // Generate new items for the custom category only
       const newCategoryItems: ChecklistItemData[] = [];
@@ -251,32 +144,36 @@ export function VerificationScreen() {
         });
       }
 
-      // Add hoist items for new category
-      hoists.forEach((hoist, index) => {
-        newCategoryItems.push({
-          id: `${customKey}_hoist_${hoist.id}`,
-          item_key: customKey,
-          component_type: "hoist",
-          component_name: `Palan ${index + 1}`,
-          component_id: hoist.id,
-          status: "unchecked",
-        });
-      });
+       // Add hoist items for new category
+       if (hoists && hoists.length > 0) {
+         hoists.forEach((hoist, index) => {
+           newCategoryItems.push({
+             id: `${customKey}_hoist_${hoist.id || index}`,
+             item_key: customKey,
+             component_type: "hoist",
+             component_name: `Palan ${index + 1}`,
+             component_id: hoist.id,
+             status: "unchecked",
+           });
+         });
+       }
 
-      // Add trolley items for new category
-      trolleys.forEach((trolley, index) => {
-        newCategoryItems.push({
-          id: `${customKey}_trolley_${trolley.id}`,
-          item_key: customKey,
-          component_type: "trolley",
-          component_name: `Chariot ${index + 1}`,
-          component_id: trolley.id,
-          status: "unchecked",
-        });
-      });
+       // Add trolley items for new category
+       if (trolleys && trolleys.length > 0) {
+         trolleys.forEach((trolley, index) => {
+           newCategoryItems.push({
+             id: `${customKey}_trolley_${trolley.id || index}`,
+             item_key: customKey,
+             component_type: "trolley",
+             component_name: `Chariot ${index + 1}`,
+             component_id: trolley.id,
+             status: "unchecked",
+           });
+         });
+       }
 
       // Update checklist items by adding the new category
-      const updatedChecklistItems = [...checklistItems, newCategoryItems];
+      const updatedChecklistItems = [...(checklistItems || []), newCategoryItems];
 
       // Restore all previous states
       const restoredItems = updatedChecklistItems.map((category) =>
@@ -291,7 +188,7 @@ export function VerificationScreen() {
       // Update form with all current values including the new custom items
       setTimeout(() => {
         const flattenedItems = restoredItems.flat();
-        const updatedCustomItems = [...customItems, newCustomItem];
+        const updatedCustomItems = [...(customItems || []), newCustomItem];
 
         const formItems = flattenedItems.map((item) => ({
           item_key: item.item_key,
@@ -326,7 +223,7 @@ export function VerificationScreen() {
 
   // Remove custom item
   const removeCustomItem = (keyToRemove: string) => {
-    setCustomItems((prev) => prev.filter((item) => item.key !== keyToRemove));
+    setCustomItems((customItems || []).filter((item: { key: string; title: string }) => item.key !== keyToRemove));
   };
 
   // Form setup
@@ -341,35 +238,7 @@ export function VerificationScreen() {
     componentId: string,
     status: "unchecked" | "checked_ok" | "issue",
   ) => {
-    const updatedItems = checklistItems.map((category) =>
-      category.map((item) =>
-        item.id === componentId ? { ...item, status } : item,
-      ),
-    );
-    setChecklistItems(updatedItems);
-
-    // Update form data
-    const flattenedItems = updatedItems.flat();
-    const formItems = flattenedItems.map((item) => ({
-      item_key: item.item_key,
-      component: (item.component_type === "equipment"
-        ? "equipment"
-        : item.component_type === "hoist"
-          ? "palan"
-          : "chariot") as "equipment" | "palan" | "chariot",
-      component_position: getChecklistIdxByKey(item.item_key, customItems),
-      component_name: item.component_name,
-      component_type: item.component_type,
-      component_id: item.component_id,
-      status: item.status as "unchecked" | "checked_ok" | "issue",
-      problem_type: item.problem_type || "",
-      comment: item.comment || "",
-      is_valid: true,
-      validation_image_path: item.validation_image_path,
-      validation_comment: item.validation_comment || "",
-    }));
-
-    form.setValue("items", formItems);
+    updateChecklistItem(componentId, { status });
   };
 
   // Handle component selection for problem form
@@ -377,9 +246,9 @@ export function VerificationScreen() {
     setSelectedComponent(component);
 
     // Find the index in the flattened form items
-    const flattenedItems = checklistItems.flat();
-    const index = flattenedItems.findIndex((item) => item.id === component.id);
-    setSelectedItemIndex(index);
+    // const flattenedItems = checklistItems.flat();
+    // const index = flattenedItems.findIndex((item) => item.id === component.id);
+    // setSelectedItemIndex(index);
   };
 
   // Handle component updates (comment, image)
@@ -387,56 +256,34 @@ export function VerificationScreen() {
     componentId: string,
     updates: Partial<ChecklistItemData>,
   ) => {
-    const updatedItems = checklistItems.map((category) =>
-      category.map((item) =>
-        item.id === componentId ? { ...item, ...updates } : item,
-      ),
-    );
-    setChecklistItems(updatedItems);
-
-    // Sync to form values so submit has latest comments/images
-    const flattenedItems = updatedItems.flat();
-    const formItems = flattenedItems.map((item) => ({
-      item_key: item.item_key,
-      component: (item.component_type === "equipment"
-        ? "equipment"
-        : item.component_type === "hoist"
-          ? "palan"
-          : "chariot") as "equipment" | "palan" | "chariot",
-      component_position: getChecklistIdxByKey(item.item_key, customItems),
-      component_name: item.component_name,
-      component_type: item.component_type,
-      component_id: item.component_id,
-      status: item.status as "unchecked" | "checked_ok" | "issue",
-      problem_type: item.problem_type || "",
-      comment: item.comment || "",
-      is_valid: true,
-      validation_image_path: item.validation_image_path,
-      validation_comment: item.validation_comment || "",
-    }));
-
-    form.setValue("items", formItems);
+    updateChecklistItem(componentId, updates);
   };
 
   // Form submission
   const onSubmit = async () => {
     try {
-      // await onSave(formData);
-      toast.success("Checklist saved successfully!");
+      // Mark verification step as completed
+      markStepCompleted(5); // Mark verification step as completed
+      
+      toast.success("Liste de vérification sauvegardée avec succès!");
+      
+      // Navigate to preview step
+      // navigate(Routes.INSPECTIONS_NEW.PREVIEW.replace(':inspectionId', inspectionId || ''));
     } catch (error) {
       console.error("Error saving checklist:", error);
       toast.error(
-        "Failed to save checklist. Please check required fields and try again.",
+        "Erreur lors de la sauvegarde de la liste de vérification. Veuillez vérifier les champs requis et réessayer.",
       );
     }
   };
 
-  if (dataLoading) {
+  // Show loading state only if we don't have equipment data yet
+  if (!equipment) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center py-8">
           <Loader2 className="h-6 w-6 animate-spin mr-2" />
-          <span>Loading equipment data...</span>
+          <span>Chargement des données d'équipement...</span>
         </CardContent>
       </Card>
     );
@@ -453,14 +300,14 @@ export function VerificationScreen() {
           <Form submitHandler={onSubmit} className="space-y-8">
             {/* Full Width Checklist Items */}
             <div className="w-full space-y-8">
-              {[...checklistCategories, ...customItems].map(
+              {[...checklistCategories, ...(customItems || [])].map(
                 (category, categoryIndex) => (
                   <div key={category.key} className="relative w-full">
                     <ChecklistItem
                       itemNumber={categoryIndex + 1}
                       itemKey={category.key}
                       title={category.title}
-                      components={checklistItems[categoryIndex]}
+                      components={checklistItems?.[categoryIndex] || []}
                       onStatusChange={handleStatusChange}
                       onComponentSelect={handleComponentSelect}
                       onComponentUpdate={handleComponentUpdate}
@@ -468,7 +315,7 @@ export function VerificationScreen() {
                       inspectionId={inspectionId}
                     />
                     {/* Remove button for custom items */}
-                    {customItems.some((item) => item.key === category.key) && (
+                    {(customItems || []).some((item) => item.key === category.key) && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -547,7 +394,7 @@ export function VerificationScreen() {
 
             {/* Defective Items Summary */}
             {(() => {
-              const defectiveItems = checklistItems
+              const defectiveItems = (checklistItems || [])
                 .flat()
                 .filter((item) => item.status === "issue");
               if (defectiveItems.length > 0) {
@@ -582,10 +429,10 @@ export function VerificationScreen() {
                           <tbody>
                             {defectiveItems.map((item) => {
                               // Find the original checklist item number
-                              const allCategories = [
-                                ...checklistCategories,
-                                ...customItems,
-                              ];
+                               const allCategories = [
+                                 ...checklistCategories,
+                                 ...(customItems || []),
+                               ];
                               const categoryIndex = allCategories.findIndex(
                                 (cat) => cat.key === item.item_key,
                               );
@@ -602,9 +449,9 @@ export function VerificationScreen() {
                                       checklistCategories.find(
                                         (cat) => cat.key === item.item_key,
                                       )?.title ||
-                                      customItems.find(
-                                        (cat) => cat.key === item.item_key,
-                                      )?.title ||
+                                       (customItems || []).find(
+                                         (cat) => cat.key === item.item_key,
+                                       )?.title ||
                                       item.item_key
                                     ).toUpperCase()}{" "}
                                     ({item.component_name})

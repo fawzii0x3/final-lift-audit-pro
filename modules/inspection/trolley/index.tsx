@@ -24,8 +24,8 @@ export function TrolleyScreen() {
   // Use stored trolleys data as default values
   const defaultValues = {
     entries: trolleys && trolleys.length > 0 ? trolleys.map(trolley => ({
-      position: trolley.position?.toString() || "1",
-      trolley_type: trolley.trolley_type || undefined,
+      position: (trolley.position?.toString() as "1" | "2") || "1",
+      trolley_type: (trolley.trolley_type as "top_run" | "under_run" | undefined) || undefined,
       manufacturer: trolley.manufacturer || "",
       model: trolley.model || "",
       serial: trolley.serial || "",
@@ -67,7 +67,7 @@ export function TrolleyScreen() {
       markStepCompleted(4); // Mark trolleys step as completed
 
       toast.success("Chariots sauvegardés avec succès");
-      navigate(`${Routes.INSPECTIONS_NEW.VERIFICATION}/${inspectionId}`);
+      navigate(Routes.INSPECTIONS_NEW.VERIFICATION.replace(':inspectionId', inspectionId || ''));
     } catch (error) {
       console.error("Error saving trolleys:", error);
       const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde des chariots";

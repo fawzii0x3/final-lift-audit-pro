@@ -55,7 +55,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: Routes.INSPECTION_NEW_BASE,
+    path: `${Routes.INSPECTION_NEW_BASE}/:inspectionId`,
     Component: () => (
       <ProtectedRoute>
         <InspectionNew />

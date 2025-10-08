@@ -18,7 +18,7 @@ export interface ChecklistItemProps {
   itemNumber: number;
   itemKey: string;
   title: string;
-  components: ChecklistItemData[];
+  components?: ChecklistItemData[];
   onStatusChange: (componentId: string, status: StatusType) => void;
   onComponentSelect: (component: ChecklistItemData) => void;
   onComponentUpdate: (

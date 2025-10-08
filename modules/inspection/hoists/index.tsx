@@ -23,13 +23,13 @@ export function HoistScreen() {
   // Use stored hoists data as default values
   const defaultValues = {
     entries: hoists && hoists.length > 0 ? hoists.map(hoist => ({
-      position: hoist.position || "1",
-      hoist_type: hoist.hoist_type || undefined,
+      position: (hoist.position?.toString() as "1" | "2") || "1",
+      hoist_type: (hoist.hoist_type as "palan_à_câble" | "palan_à_chaîne" | undefined) || undefined,
       capacity: hoist.capacity || "",
       manufacturer: hoist.manufacturer || "",
       model: hoist.model || "",
       serial: hoist.serial || "",
-      image_path: hoist.image_path || undefined,
+      image_path: undefined, // Not in database schema
     })) : [
       {
         position: "1" as const,
@@ -69,7 +69,7 @@ export function HoistScreen() {
       markStepCompleted(3); // Mark hoists step as completed
 
       toast.success("Palans sauvegardés avec succès");
-      navigate(`${Routes.INSPECTIONS_NEW.TROLLEY}/${inspectionId}`);
+      navigate(Routes.INSPECTIONS_NEW.TROLLEY.replace(':inspectionId', inspectionId || ''));
     } catch (error) {
       console.error("Error saving hoists:", error);
       const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde des palans";
