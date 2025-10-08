@@ -24,12 +24,24 @@ import {
 import { useNavigate } from "react-router";
 import { useDeleteTechnician, useTechnicians } from "@modules/shared/api";
 import { Routes } from "@modules/shared/routes";
+import { toast } from "sonner";
 
 export function Technicians() {
   const navigate = useNavigate();
 
   const { technicians, isLoading } = useTechnicians();
-  const { mutateAsync } = useDeleteTechnician();
+  const { mutateAsync: deleteTechnician, isPending: isDeleting } = useDeleteTechnician();
+
+  const handleDeleteTechnician = async (technicianId: string, technicianName: string) => {
+    try {
+      await deleteTechnician(technicianId);
+      toast.success(`Le technicien "${technicianName}" a été supprimé avec succès.`);
+    } catch (error) {
+      console.error("Error deleting technician:", error);
+      const errorMessage = error instanceof Error ? error.message : "Impossible de supprimer le technicien. Veuillez réessayer.";
+      toast.error(errorMessage);
+    }
+  };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -115,6 +127,7 @@ export function Technicians() {
                           variant="outline"
                           size="sm"
                           className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          disabled={isDeleting}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -132,12 +145,13 @@ export function Technicians() {
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => mutateAsync(technician.id)}
+                            onClick={() => handleDeleteTechnician(technician.id, technician.display_name)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeleting}
                           >
-                            Supprimer
+                            {isDeleting ? "Suppression..." : "Supprimer"}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

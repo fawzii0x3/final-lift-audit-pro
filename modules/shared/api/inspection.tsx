@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase, type TablesInsert } from "../supabase";
+import { supabase, type TablesInsert, type Database } from "../supabase";
 import { QueryKeys } from "./const";
 import { toast } from "sonner";
 import { ensureArray } from "@modules/shared/helpers";
@@ -56,6 +56,29 @@ export const useCreateInspectionCheckItem = () => {
     },
   });
 };
+
+export function useCreateInspectionEquipment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (equipmentData: Database["public"]["Tables"]["inspection_equipment"]["Insert"]) => {
+      const { data, error } = await supabase
+        .from("inspection_equipment")
+        .insert(equipmentData)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.INSPECTIONS] });
+    },
+  });
+}
 
 export function useDeleteInspection() {
   return useMutation({

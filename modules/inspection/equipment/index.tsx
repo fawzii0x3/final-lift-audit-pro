@@ -3,9 +3,59 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EquipmentSchema } from "./hooks.ts";
 import { equipmentTypes } from "@modules/shared/types";
 import { useCreateForm } from "@modules/shared/components";
+import { Routes } from "@modules/shared/routes";
+import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
+import { useCreateInspectionEquipment } from "@modules/shared/api/inspection";
+import { useDraftEquipment, useDraftStepManagement } from "../store";
+import { z } from "zod";
 
 export function EquipmentScreen() {
+  const navigate = useNavigate();
+  const { inspectionId } = useParams<{ inspectionId: string }>();
+  const { mutateAsync: createEquipment, isPending } = useCreateInspectionEquipment();
+  const { setEquipment } = useDraftEquipment();
+  const { markStepCompleted } = useDraftStepManagement();
   const { Form, createField } = useCreateForm(EquipmentSchema, {});
+
+  const handleSubmit = async (data: z.infer<typeof EquipmentSchema>) => {
+    if (!inspectionId) {
+      toast.error("ID d'inspection manquant");
+      return;
+    }
+
+    try {
+      const equipmentData = {
+        inspection_id: inspectionId,
+        equipment_type: data.equipment_type,
+        equipment_number: data.equipment_number || null,
+        manufacturer: data.manufacturer || null,
+        model: data.model || null,
+        serial: data.serial || null,
+        capacity: data.capacity || null,
+        height_ft: data.height_ft || null,
+        ordered_by: data.ordered_by || null,
+        power_voltage: data.power_voltage || null,
+        control_voltage: data.control_voltage || null,
+        location_label: data.location_label || null,
+      };
+
+      // Store equipment data in the store
+      setEquipment(equipmentData);
+
+      await createEquipment(equipmentData);
+
+      // Mark equipment step as completed
+      markStepCompleted(2); // Mark equipment step as completed
+
+      toast.success("Équipement sauvegardé avec succès");
+      navigate(`${Routes.INSPECTIONS_NEW.HOIST}/${inspectionId}`);
+    } catch (error) {
+      console.error("Error saving equipment:", error);
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde de l'équipement";
+      toast.error(errorMessage);
+    }
+  };
   const TypeField = createField("equipment_type", "select", {
     label: "Type d'équipement *",
     data: equipmentTypes.map((type) => ({
@@ -81,7 +131,7 @@ export function EquipmentScreen() {
         <CardTitle>Équipement</CardTitle>
       </CardHeader>
       <CardContent>
-        <Form className="space-y-6" submitHandler={() => {}}>
+        <Form className="space-y-6" submitHandler={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TypeField}
             {EquipmentNumberField}
@@ -97,15 +147,9 @@ export function EquipmentScreen() {
           </div>
 
           <div className="flex justify-end pt-6 border-t">
-            {/*<Button*/}
-            {/*  type="submit"*/}
-            {/*  disabled={loading || form.formState.isSubmitting}*/}
-            {/*>*/}
-            {/*  {loading || form.formState.isSubmitting*/}
-            {/*    ? "Sauvegarde..."*/}
-            {/*    : "Sauvegarder & Suivant"}*/}
-            {/*</Button>*/}
-            <Button type="submit">Sauvegarder & Suivant</Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Sauvegarde..." : "Sauvegarder & Suivant"}
+            </Button>
           </div>
         </Form>
       </CardContent>
