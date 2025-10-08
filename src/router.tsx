@@ -14,6 +14,8 @@ import { VerificationScreen } from "@modules/inspection/verification";
 import { PreviewScreen } from "@modules/inspection/preview";
 import { Inspections } from "@modules/inspection/screen";
 import { ClientScreen } from "@modules/clients/screen";
+import { CreateClient } from "@modules/clients/create";
+import { EditClient } from "@modules/clients/edit";
 import { Technicians } from "@modules/techniciens/screen";
 import TechnicianCreate from "@modules/techniciens/create";
 
@@ -29,6 +31,14 @@ export const router = createBrowserRouter([
       {
         path: Routes.CLIENTS,
         Component: ClientScreen,
+      },
+      {
+        path: Routes.CLIENTS_CREATE,
+        Component: CreateClient,
+      },
+      {
+        path: `${Routes.CLIENTS_EDIT}/:id`,
+        Component: EditClient,
       },
       {
         path: Routes.INSPECTIONS,

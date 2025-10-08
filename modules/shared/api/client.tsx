@@ -31,6 +31,70 @@ export function useClients() {
   };
 }
 
+export function useCreateClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (clientData: {
+      org_id: string;
+      name: string;
+      phone_number?: string | null;
+      address?: string | null;
+      email?: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from("clients")
+        .insert([clientData])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.CLIENTS] });
+    },
+  });
+}
+
+export function useUpdateClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (clientData: {
+      id: string;
+      name: string;
+      phone_number?: string | null;
+      address?: string | null;
+      email?: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from("clients")
+        .update({
+          name: clientData.name,
+          phone_number: clientData.phone_number,
+          address: clientData.address,
+          email: clientData.email,
+        })
+        .eq("id", clientData.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.CLIENTS] });
+    },
+  });
+}
+
 export function useDeleteClient() {
   const queryClient = useQueryClient();
 

@@ -17,6 +17,7 @@ import { useState } from "react";
 import { type Clients, useDeleteClient } from "@modules/shared/api";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { Routes } from "@modules/shared/routes";
 
 interface Props {
   client: Clients;
@@ -80,7 +81,7 @@ export function RenderClient({ client }: Props) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/clients/${client.id}/edit`)}
+            onClick={() => navigate(`${Routes.CLIENTS_EDIT}/${client.id}`)}
           >
             <Edit className="h-4 w-4" />
           </Button>

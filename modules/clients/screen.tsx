@@ -11,6 +11,7 @@ import { RenderClient } from "./render-client";
 import { useNavigate } from "react-router";
 import { useClients } from "@modules/shared/api";
 import { EmptyList } from "@modules/shared/components";
+import { Routes } from "@modules/shared/routes";
 
 export function ClientScreen() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export function ClientScreen() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Clients</h1>
-        <Button onClick={() => navigate("/clients/new")}>
+        <Button onClick={() => navigate(Routes.CLIENTS_CREATE)}>
           <Plus className="mr-2 h-4 w-4" />
           Ajouter un client
         </Button>

@@ -2,6 +2,8 @@ const INSPECTIONS_NEW_BASE = "/inspections/new";
 export const Routes = {
   DASHBOARD: "/",
   CLIENTS: "/clients",
+  CLIENTS_CREATE: "/clients/new",
+  CLIENTS_EDIT: "/clients/edit",
   INSPECTIONS: "/inspections",
   INSPECTION_NEW_BASE: INSPECTIONS_NEW_BASE,
   TECHNICIANS: "/technicians",
