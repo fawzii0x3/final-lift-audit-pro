@@ -1,6 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase, type TablesInsert } from "../supabase";
 import { QueryKeys } from "./const";
+import { toast } from "sonner";
+import { ensureArray } from "@modules/shared/helpers";
 
 export type InspectionCheckItemsInsert = TablesInsert<"inspection_check_items">;
 export type InspectionsInsert = TablesInsert<"inspections">;
@@ -54,3 +56,53 @@ export const useCreateInspectionCheckItem = () => {
     },
   });
 };
+
+export function useDeleteInspection() {
+  return useMutation({
+    mutationFn: async (inspectionId: string) => {
+      const { error } = await supabase
+        .from("inspections")
+        .delete()
+        .eq("id", inspectionId);
+      if (error) {
+        throw error;
+      }
+      return inspectionId;
+    },
+    onSuccess: () => {
+      toast.success("Inspection supprimée avec succès");
+    },
+    onError: () => {
+      toast.error("Erreur lors de la suppression de l'inspection");
+    },
+  });
+}
+
+export function useInspectionsList() {
+  const { data, ...query } = useQuery({
+    queryKey: [QueryKeys.INSPECTIONS],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("inspections")
+        .select(
+          `
+          *,
+          client:clients(name, address, phone_number, email),
+          technician:profiles!inspections_technician_id_fkey(display_name),
+          equipment:inspection_equipment(equipment_number)
+      `,
+        )
+        .order("updated_at", { ascending: false });
+      if (error) {
+        throw error;
+      }
+      return data;
+    },
+  });
+  const inspections = ensureArray(data);
+  return { inspections, ...query };
+}
+
+export type InspectionsType = ReturnType<
+  typeof useInspectionsList
+>["inspections"][number];

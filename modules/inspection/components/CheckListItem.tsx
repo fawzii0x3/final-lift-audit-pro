@@ -32,70 +32,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
-export type StatusType = "unchecked" | "checked_ok" | "issue";
-
-export interface ChecklistItemData {
-  id: string;
-  item_key: string;
-  component_type: "hoist" | "trolley" | "equipment";
-  component_name: string;
-  component_id?: string;
-  status: StatusType;
-  comment?: string;
-  image_path?: string;
-  problem_type?: string;
-  validation_image_path?: string;
-  validation_comment?: string;
-}
-
-interface ChecklistItemProps {
-  itemNumber: number;
-  itemKey: string;
-  title: string;
-  components: ChecklistItemData[];
-  onStatusChange: (componentId: string, status: StatusType) => void;
-  onComponentSelect: (component: ChecklistItemData) => void;
-  onComponentUpdate: (
-    componentId: string,
-    updates: Partial<ChecklistItemData>,
-  ) => void;
-  selectedComponentId?: string;
-  inspectionId?: string;
-  disabled?: boolean;
-  showKeyboardHints?: boolean;
-}
-
-const getEquipmentTypeLabel = (equipmentType: string): string => {
-  const labels: Record<string, string> = {
-    pont_roulant: "Pont roulant",
-    pont_roulant_simple_palan: "Pont roulant simple palan",
-    pont_roulant_double_palan: "Pont roulant double palan",
-    pont_roulant_triple_palan: "Pont roulant triple palan",
-    monorail: "Monorail",
-    monorail_simple: "Monorail simple",
-    monorail_double: "Monorail double",
-    potence: "Potence",
-    potence_simple: "Potence simple",
-    potence_double: "Potence double",
-    grue_mobile: "Grue mobile",
-    grue_fixe: "Grue fixe",
-    palan_electrique: "Palan électrique",
-    palan_manuel: "Palan manuel",
-    treuil: "Treuil",
-    autre: "Autre",
-  };
-
-  // If not found in mapping, convert underscores to spaces and capitalize first letter of each word
-  if (!labels[equipmentType]) {
-    return equipmentType
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  }
-
-  return labels[equipmentType];
-};
-
+import type {
+  ChecklistItemData,
+  StatusType,
+  ChecklistItemProps,
+} from "./check-list-item/types";
+import { getEquipmentTypeLabel } from "@modules/shared/types";
 export function ChecklistItem({
   itemNumber,
   title,

@@ -12,6 +12,7 @@ import { HoistScreen } from "@modules/inspection/hoists";
 import { TrolleyScreen } from "@modules/inspection/trolley";
 import { VerificationScreen } from "@modules/inspection/verification";
 import { PreviewScreen } from "@modules/inspection/preview";
+import { Inspections } from "@modules/inspection/screen";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: Routes.CLIENTS,
         Component: () => <div>Clients</div>,
+      },
+      {
+        path: Routes.INSPECTIONS,
+        Component: Inspections,
       },
     ],
   },

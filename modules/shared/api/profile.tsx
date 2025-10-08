@@ -10,6 +10,15 @@ interface ProfileProps {
   userId: Optional<string>;
 }
 type UserProfile = Tables<"profiles">;
+
+type ProfileRoles = "admin" | "technician" | "client";
+
+const roleMaps: Record<string, ProfileRoles> = {
+  org_admin: "admin",
+  org_technician: "technician",
+  org_client: "client",
+};
+
 interface fetchProfileResponse {
   profile: UserProfile | null;
   needsOnboarding: boolean;
@@ -65,4 +74,13 @@ export function useProfile() {
 export function useOrgId() {
   const { profile } = useProfile();
   return profile?.org_id;
+}
+
+export function useUserRole(): ProfileRoles | null {
+  const { profile } = useProfile();
+  if (!profile?.role) {
+    return null;
+  }
+  const role = profile.role;
+  return roleMaps[role] ?? null;
 }

@@ -169,3 +169,34 @@ export function getProblemTypePriority(
     (problem?.priority as "low" | "medium" | "high" | "critical") || "medium"
   );
 }
+
+export const getEquipmentTypeLabel = (equipmentType: string): string => {
+  const labels: Record<string, string> = {
+    pont_roulant: "Pont roulant",
+    pont_roulant_simple_palan: "Pont roulant simple palan",
+    pont_roulant_double_palan: "Pont roulant double palan",
+    pont_roulant_triple_palan: "Pont roulant triple palan",
+    monorail: "Monorail",
+    monorail_simple: "Monorail simple",
+    monorail_double: "Monorail double",
+    potence: "Potence",
+    potence_simple: "Potence simple",
+    potence_double: "Potence double",
+    grue_mobile: "Grue mobile",
+    grue_fixe: "Grue fixe",
+    palan_electrique: "Palan électrique",
+    palan_manuel: "Palan manuel",
+    treuil: "Treuil",
+    autre: "Autre",
+  };
+
+  // If not found in mapping, convert underscores to spaces and capitalize first letter of each word
+  if (!labels[equipmentType]) {
+    return equipmentType
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  return labels[equipmentType];
+};
