@@ -10,6 +10,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import {
+  Table,
   TableHeader,
   TableRow,
   TableHead,
@@ -17,7 +18,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import type { InspectionsType } from "@modules/shared/api";
-import { Table, Download, Edit, Trash2 } from "lucide-react";
+import { Download, Edit, Trash2 } from "lucide-react";
 import { getEquipmentNumber } from "./helper";
 import { Button } from "@/components/ui/button";
 import { formatInspectionDate } from "@modules/shared/helpers";
