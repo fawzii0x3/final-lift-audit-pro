@@ -1,0 +1,12 @@
+---
+description: Use pnpm exclusively for package management
+globs: ["package.json", "pnpm-lock.yaml", "**/package.json"]
+alwaysApply: true
+---
+
+- Always use `pnpm` for package installation, not npm or yarn
+- Use `pnpm install` instead of `npm install`
+- Use `pnpm add` instead of `npm install <package>`
+- Use `pnpm remove` instead of `npm uninstall`
+- Use `pnpm run` instead of `npm run`
+- When suggesting package management commands, always use pnpm syntax

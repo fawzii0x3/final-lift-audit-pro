@@ -1,6 +1,6 @@
 import { useOrgId } from "./profile.tsx";
 import { QueryKeys } from "./const.ts";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../supabase";
 import { ensureArray } from "@modules/shared/helpers";
 
@@ -30,3 +30,26 @@ export function useTechnicians() {
     ...query,
   };
 }
+
+export function useDeleteTechnician() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (technicianId: string) => {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", technicianId);
+      if (error) {
+        throw error;
+      }
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.TECHNICIANS] });
+    },
+  });
+}
+
+export type UseTechniciansReturn = ReturnType<typeof useTechnicians>;
+export type Technician = UseTechniciansReturn["technicians"][number];

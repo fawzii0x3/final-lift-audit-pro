@@ -1,0 +1,13 @@
+---
+description: API calls must be declared in api folder and exported from index
+globs: ["**/api/**/*", "**/modules/shared/api/**/*"]
+alwaysApply: true
+---
+
+- All API calls must be declared in the `modules/shared/api/` folder
+- Each API service should have its own file (e.g., `technician.tsx`, `client.tsx`)
+- All API functions must be exported from the main `modules/shared/api/index.ts` file
+- If an API file doesn't exist, create it following the existing pattern
+- API functions should be pure functions that return promises
+- Use consistent naming: `getTechnicians`, `createClient`, `updateInspection`, etc.
+- Import API functions from the index file: `import { getTechnicians } from '@/modules/shared/api'`

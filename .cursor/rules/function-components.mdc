@@ -1,0 +1,11 @@
+---
+description: Use function declarations for React components, not arrow functions
+globs: ["**/*.tsx", "**/*.jsx", "**/components/**/*", "**/modules/**/*"]
+alwaysApply: true
+---
+
+- React components must be declared as function declarations, not arrow functions
+- Use `function ComponentName() {}` instead of `const ComponentName = () => {}`
+- Export components using `export function ComponentName() {}` or `export default function ComponentName() {}`
+- This applies to all React components, pages, and UI components
+- Exception: Only use arrow functions for small utility functions, hooks, or non-component functions
