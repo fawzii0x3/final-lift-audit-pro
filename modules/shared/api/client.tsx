@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "./const";
 import { supabase } from "../supabase";
 import { useOrgId } from "./profile.tsx";
@@ -30,3 +30,23 @@ export function useClients() {
     ...result,
   };
 }
+
+export function useDeleteClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("clients").delete().eq("id", id);
+      if (error) {
+        return false;
+      }
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.CLIENTS] });
+    },
+  });
+}
+
+export type UseClientsReturn = ReturnType<typeof useClients>;
+export type Clients = UseClientsReturn["clients"][number];

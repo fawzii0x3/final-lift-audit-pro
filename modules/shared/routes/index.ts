@@ -4,6 +4,7 @@ export const Routes = {
   CLIENTS: "/clients",
   INSPECTIONS: "/inspections",
   INSPECTION_NEW_BASE: INSPECTIONS_NEW_BASE,
+  TECHNICIANS: "/technicians",
   INSPECTIONS_NEW: {
     CLIENTS: `${INSPECTIONS_NEW_BASE}/client`,
     EQUIPMENT: `${INSPECTIONS_NEW_BASE}/equipment`,

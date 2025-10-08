@@ -13,6 +13,7 @@ import { TrolleyScreen } from "@modules/inspection/trolley";
 import { VerificationScreen } from "@modules/inspection/verification";
 import { PreviewScreen } from "@modules/inspection/preview";
 import { Inspections } from "@modules/inspection/screen";
+import { ClientScreen } from "@modules/clients/screen";
 
 export const router = createBrowserRouter([
   {
@@ -25,11 +26,15 @@ export const router = createBrowserRouter([
       },
       {
         path: Routes.CLIENTS,
-        Component: () => <div>Clients</div>,
+        Component: ClientScreen,
       },
       {
         path: Routes.INSPECTIONS,
         Component: Inspections,
+      },
+      {
+        path: Routes.TECHNICIANS,
+        Component: () => <div>Techniciens</div>,
       },
     ],
   },
