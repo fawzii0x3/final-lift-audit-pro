@@ -31,6 +31,50 @@ export function useTechnicians() {
   };
 }
 
+export function useCreateTechnician() {
+  const queryClient = useQueryClient();
+  const orgId = useOrgId();
+
+  return useMutation({
+    mutationFn: async (technicianData: {
+      displayName: string;
+      email: string;
+      password: string;
+    }) => {
+      if (!orgId) {
+        throw new Error("Organization ID is required to create technician");
+      }
+
+      const { data, error } = await supabase.functions.invoke(
+        "create-technician",
+        {
+          body: {
+            displayName: technicianData.displayName,
+            email: technicianData.email,
+            password: technicianData.password,
+          },
+          headers: {
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          },
+        },
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.TECHNICIANS] });
+    },
+  });
+}
+
 export function useDeleteTechnician() {
   const queryClient = useQueryClient();
 
