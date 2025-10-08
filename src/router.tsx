@@ -14,6 +14,7 @@ import { VerificationScreen } from "@modules/inspection/verification";
 import { PreviewScreen } from "@modules/inspection/preview";
 import { Inspections } from "@modules/inspection/screen";
 import { ClientScreen } from "@modules/clients/screen";
+import { Technicians } from "@modules/techniciens/screen";
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +35,7 @@ export const router = createBrowserRouter([
       },
       {
         path: Routes.TECHNICIANS,
-        Component: () => <div>Techniciens</div>,
+        Component: Technicians,
       },
     ],
   },
