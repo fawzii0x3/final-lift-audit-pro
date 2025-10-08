@@ -1,11 +1,60 @@
 ---
-description: Use function declarations for React components, not arrow functions
+description: Use function declarations for React components, not arrow functions, and avoid export default
 globs: ["**/*.tsx", "**/*.jsx", "**/components/**/*", "**/modules/**/*"]
 alwaysApply: true
 ---
 
+# Function Components Rule
+
+## Component Declaration Rules:
 - React components must be declared as function declarations, not arrow functions
 - Use `function ComponentName() {}` instead of `const ComponentName = () => {}`
-- Export components using `export function ComponentName() {}` or `export default function ComponentName() {}`
 - This applies to all React components, pages, and UI components
 - Exception: Only use arrow functions for small utility functions, hooks, or non-component functions
+
+## Export Rules:
+- **NEVER** use `export default` for components and pages
+- **ALWAYS** use named exports: `export function ComponentName() {}`
+- **ALWAYS** import components using destructuring: `import { ComponentName } from './path'`
+- This ensures better tree-shaking, clearer imports, and consistent naming
+
+## Examples:
+
+### ✅ Correct Implementation
+```typescript
+// Component declaration
+export function MyComponent() {
+  return <div>Hello World</div>;
+}
+
+// Page component
+export function DashboardPage() {
+  return <div>Dashboard</div>;
+}
+
+// Import usage
+import { MyComponent, DashboardPage } from './components';
+```
+
+### ❌ Incorrect Implementation
+```typescript
+// ❌ Don't use arrow functions for components
+const MyComponent = () => {
+  return <div>Hello World</div>;
+};
+
+// ❌ Don't use export default for components
+export default function MyComponent() {
+  return <div>Hello World</div>;
+}
+
+// ❌ Don't use default imports
+import MyComponent from './components';
+```
+
+## Benefits:
+- **Consistency**: All components follow the same declaration pattern
+- **Tree Shaking**: Named exports enable better dead code elimination
+- **Clarity**: Import statements clearly show what's being imported
+- **Refactoring**: Easier to rename and refactor components
+- **IDE Support**: Better autocomplete and go-to-definition support
