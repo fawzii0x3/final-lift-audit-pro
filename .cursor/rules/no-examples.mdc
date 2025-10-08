@@ -1,0 +1,77 @@
+---
+description: Prohibits adding example usage, demo code, or placeholder implementations
+globs: ["**/*.tsx", "**/*.ts", "**/*.js", "**/*.jsx", "modules/**/*", "src/**/*"]
+alwaysApply: true
+---
+
+# No Examples Rule
+
+This rule prohibits adding example usage, demo code, or placeholder implementations in the codebase.
+
+## Rules:
+
+### 1. Prohibited Content
+- **NEVER** add example usage in comments
+- **NEVER** add demo code or placeholder implementations
+- **NEVER** add "TODO" or "FIXME" comments with example code
+- **NEVER** add example data or mock implementations
+- **NEVER** add commented-out example code
+
+### 2. Code Quality Standards
+- **ALWAYS** write production-ready code
+- **ALWAYS** implement complete functionality
+- **ALWAYS** use real data and proper implementations
+- **ALWAYS** write clean, maintainable code without examples
+
+### 3. Documentation Standards
+- **NEVER** include example usage in code comments
+- **NEVER** add "Example:" or "Usage:" sections in comments
+- **ALWAYS** write clear, concise comments without examples
+- **ALWAYS** focus on explaining the purpose, not usage
+
+### 4. Implementation Standards
+- **NEVER** create placeholder functions with example logic
+- **NEVER** add console.log statements for demonstration
+- **NEVER** add example props or mock data
+- **ALWAYS** implement real business logic
+- **ALWAYS** use proper error handling
+
+## Examples of Prohibited Patterns:
+
+### ❌ Don't Add Example Comments
+```typescript
+// Example usage: <Component prop="value" />
+// Usage: const result = useHook();
+// Example: const data = { name: "John", age: 30 };
+```
+
+### ❌ Don't Add Demo Code
+```typescript
+// TODO: Implement real logic
+const handleClick = () => {
+  console.log("Button clicked"); // Example
+  // Example implementation
+};
+```
+
+### ❌ Don't Add Placeholder Data
+```typescript
+const exampleData = [
+  { id: 1, name: "Example Item" },
+  { id: 2, name: "Another Example" }
+];
+```
+
+### ❌ Don't Add Mock Implementations
+```typescript
+// Example implementation
+const fetchData = async () => {
+  return Promise.resolve({ data: "example" });
+};
+```
+
+## Benefits:
+- **Production Ready**: All code is immediately usable
+- **Clean Codebase**: No clutter from example code
+- **Professional**: Maintains high code quality standards
+- **Maintainable**: Easier to understand and modify real implementations
