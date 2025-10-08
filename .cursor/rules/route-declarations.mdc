@@ -1,0 +1,35 @@
+---
+description: All routes must be declared in the Routes object and used consistently
+globs: ["**/router.tsx", "**/routes/**/*", "**/modules/shared/routes/**/*", "**/*.tsx", "**/*.jsx"]
+alwaysApply: true
+---
+
+# Route Declarations Rule
+
+All application routes must be declared in the `modules/shared/routes/index.ts` file and used consistently throughout the application.
+
+## Rules:
+- All route paths must be defined in the `Routes` object in `modules/shared/routes/index.ts`
+- Never use hardcoded route strings in components or router configuration
+- Import routes using: `import { Routes } from "@modules/shared/routes"`
+- Use the Routes object for all route references: `Routes.DASHBOARD`, `Routes.CLIENTS`, etc.
+- When adding new routes, add them to the Routes object first, then use them in the router configuration
+- Route constants should be in UPPER_CASE format
+- Nested routes should be grouped under a parent object (e.g., `INSPECTIONS_NEW`)
+
+## Examples:
+✅ Correct:
+```typescript
+import { Routes } from "@modules/shared/routes";
+// In router.tsx
+path: Routes.DASHBOARD,
+// In components
+navigate(Routes.CLIENTS);
+```
+
+❌ Incorrect:
+```typescript
+// Hardcoded paths
+path: "/dashboard",
+navigate("/clients");
+```

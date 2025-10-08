@@ -1,0 +1,50 @@
+---
+description: Guidelines for adding new cursor rules to the workspace
+globs: [".cursor/rules/**/*", "**/.cursor/rules/**/*"]
+alwaysApply: true
+---
+
+# Adding New Rules
+
+When adding new cursor rules to the workspace, follow these guidelines:
+
+## Rule File Format
+- Create new rule files in the `.cursor/rules/` directory
+- Use the `.mdc` extension for rule files
+- Include proper YAML frontmatter with:
+  - `description`: Clear, concise description of what the rule enforces
+  - `globs`: Array of file patterns where the rule should apply
+  - `alwaysApply: true`: To make the rule always enforced
+
+## YAML Frontmatter Template
+```yaml
+---
+description: Brief description of the rule
+globs: ["**/*.tsx", "**/*.jsx", "**/specific-folder/**/*"]
+alwaysApply: true
+---
+```
+
+## Rule Content Guidelines
+- Use clear, actionable language
+- Provide specific examples of correct and incorrect usage
+- Include code examples where helpful
+- Use markdown formatting for better readability
+- Group related rules under clear headings
+
+## File Naming Convention
+- Use kebab-case for rule file names
+- Be descriptive: `route-declarations.mdc`, `api-structure.mdc`
+- Avoid generic names like `rules.mdc` or `general.mdc`
+
+## Examples of Good Rule Files
+- `route-declarations.mdc` - Enforces centralized route management
+- `api-structure.mdc` - Enforces API organization patterns
+- `function-components.mdc` - Enforces React component patterns
+- `pnpm-only.mdc` - Enforces package manager usage
+
+## Testing New Rules
+- Test rules on relevant files to ensure they work as expected
+- Verify the `globs` patterns match the intended file types
+- Check that the rule content is clear and actionable
+- Ensure the rule doesn't conflict with existing rules

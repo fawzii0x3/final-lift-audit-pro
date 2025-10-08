@@ -78,11 +78,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/landing",
+    path: Routes.LANDING,
     element: <Landing />,
   },
   {
-    path: "/auth",
+    path: Routes.AUTH,
     element: <Auth />,
   },
 ]);

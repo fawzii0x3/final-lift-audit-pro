@@ -1,0 +1,54 @@
+# Always Applied Workspace Rules
+
+## Route Declarations Rule
+All application routes must be declared in the `modules/shared/routes/index.ts` file and used consistently throughout the application.
+
+### Rules:
+- All route paths must be defined in the `Routes` object in `modules/shared/routes/index.ts`
+- Never use hardcoded route strings in components or router configuration
+- Import routes using: `import { Routes } from "@modules/shared/routes"`
+- Use the Routes object for all route references: `Routes.DASHBOARD`, `Routes.CLIENTS`, etc.
+- When adding new routes, add them to the Routes object first, then use them in the router configuration
+- Route constants should be in UPPER_CASE format
+- Nested routes should be grouped under a parent object (e.g., `INSPECTIONS_NEW`)
+
+### Examples:
+✅ Correct:
+```typescript
+import { Routes } from "@modules/shared/routes";
+// In router.tsx
+path: Routes.DASHBOARD,
+// In components
+navigate(Routes.CLIENTS);
+```
+
+❌ Incorrect:
+```typescript
+// Hardcoded paths
+path: "/dashboard",
+navigate("/clients");
+```
+
+## API Structure Rule
+- All API calls must be declared in the `modules/shared/api/` folder
+- Each API service should have its own file (e.g., `technician.tsx`, `client.tsx`)
+- All API functions must be exported from the main `modules/shared/api/index.ts` file
+- If an API file doesn't exist, create it following the existing pattern
+- API functions should be pure functions that return promises
+- Use consistent naming: `getTechnicians`, `createClient`, `updateInspection`, etc.
+- Import API functions from the index file: `import { getTechnicians } from '@/modules/shared/api'`
+
+## Function Components Rule
+- React components must be declared as function declarations, not arrow functions
+- Use `function ComponentName() {}` instead of `const ComponentName = () => {}`
+- Export components using `export function ComponentName() {}` or `export default function ComponentName() {}`
+- This applies to all React components, pages, and UI components
+- Exception: Only use arrow functions for small utility functions, hooks, or non-component functions
+
+## Package Manager Rule
+- Always use `pnpm` for package installation, not npm or yarn
+- Use `pnpm install` instead of `npm install`
+- Use `pnpm add` instead of `npm install <package>`
+- Use `pnpm remove` instead of `npm uninstall`
+- Use `pnpm run` instead of `npm run`
+- When suggesting package management commands, always use pnpm syntax
