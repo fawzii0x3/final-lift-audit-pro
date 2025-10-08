@@ -1,0 +1,197 @@
+---
+description: Enforces the use of dynamic forms for all form implementations
+globs: ["**/*.tsx", "**/*.ts", "modules/**/*"]
+alwaysApply: true
+---
+
+# Dynamic Forms Rule
+
+All forms in the application must use the dynamic form system provided in `modules/shared/components/form/`. This ensures consistency, type safety, and proper validation across the application.
+
+## Rules:
+
+### 1. Use Dynamic Form Hooks
+- **ALWAYS** use `useCreateForm` for simple forms
+- **ALWAYS** use `useCreateArrayForm` for forms with arrays/dynamic fields
+- **NEVER** create forms using react-hook-form directly
+- **NEVER** use basic HTML form elements without the dynamic form system
+
+### 2. Form Implementation Pattern
+```typescript
+// ✅ Correct: Use dynamic form hooks
+import { useCreateForm } from "@modules/shared/components/form/use-form";
+import { useCreateArrayForm } from "@modules/shared/components";
+
+const { createField, Form } = useCreateForm(schema, defaultValues);
+const { createArrayField, useArrayField, Form } = useCreateArrayForm(schema, defaultValues);
+```
+
+### 3. Field Creation
+- **ALWAYS** use `createField()` to create form fields
+- **ALWAYS** use `createArrayField()` for array fields
+- **ALWAYS** specify the field type: `"text"`, `"select"`, or `"date"`
+- **ALWAYS** provide proper field props based on the field type
+
+### 4. Field Types and Props
+```typescript
+// Text fields
+createField("fieldName", "text", {
+  label: "Field Label",
+  placeholder: "Enter value",
+  disabled: false,
+  readonly: false
+});
+
+// Select fields
+createField("fieldName", "select", {
+  label: "Field Label",
+  data: [{ label: "Option 1", value: "1", key: "1" }],
+  placeholder: "Select option",
+  disabled: false,
+  readonly: false
+});
+
+// Date fields
+createField("fieldName", "date", {
+  label: "Date Label",
+  placeholder: "Pick a date",
+  disabled: false,
+  readonly: false,
+  minDate: new Date(),
+  maxDate: new Date("2100-01-01")
+});
+```
+
+### 5. Form Structure
+```typescript
+// ✅ Correct: Use the Form component from dynamic form
+<Form submitHandler={handleSubmit}>
+  {FieldComponent}
+  <Button type="submit">Submit</Button>
+</Form>
+```
+
+### 6. Array Fields
+- **ALWAYS** use `useArrayField()` for managing array fields
+- **ALWAYS** use `createArrayField()` for individual array items
+- **ALWAYS** provide proper array field names with index
+
+```typescript
+const { fields, append, remove } = useArrayField("entries");
+
+// In render
+{fields.map((field, index) => (
+  <div key={field.id}>
+    {createArrayField("entries", index, "fieldName", "text", {
+      label: "Field Label"
+    })}
+    <Button onClick={() => remove(index)}>Remove</Button>
+  </div>
+))}
+```
+
+### 7. Schema Requirements
+- **ALWAYS** define Zod schemas for form validation
+- **ALWAYS** use the schema with the dynamic form hooks
+- **ALWAYS** provide proper TypeScript types
+
+```typescript
+const schema = z.object({
+  fieldName: z.string().min(1, "Required"),
+  // ... other fields
+});
+
+const { createField, Form } = useCreateForm(schema, {
+  defaultValues: {
+    fieldName: "",
+    // ... other defaults
+  }
+});
+```
+
+### 8. Submit Handlers
+- **ALWAYS** use typed submit handlers
+- **ALWAYS** handle form submission properly
+- **ALWAYS** use the form's handleSubmit method
+
+```typescript
+const handleSubmit = async (data: z.infer<typeof schema>) => {
+  // Handle form submission
+  await submitData(data);
+};
+```
+
+## Examples:
+
+### ✅ Correct Implementation
+```typescript
+import { useCreateForm } from "@modules/shared/components/form/use-form";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  date: z.string()
+});
+
+export function MyForm() {
+  const { createField, Form } = useCreateForm(schema, {
+    defaultValues: {
+      name: "",
+      email: "",
+      date: ""
+    }
+  });
+
+  const NameField = createField("name", "text", {
+    label: "Name",
+    placeholder: "Enter your name"
+  });
+
+  const EmailField = createField("email", "text", {
+    label: "Email",
+    placeholder: "Enter your email"
+  });
+
+  const DateField = createField("date", "date", {
+    label: "Date",
+    placeholder: "Pick a date"
+  });
+
+  const handleSubmit = async (data: z.infer<typeof schema>) => {
+    console.log(data);
+  };
+
+  return (
+    <Form submitHandler={handleSubmit}>
+      {NameField}
+      {EmailField}
+      {DateField}
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+}
+```
+
+### ❌ Incorrect Implementation
+```typescript
+// ❌ Don't use react-hook-form directly
+import { useForm } from "react-hook-form";
+
+// ❌ Don't use basic HTML forms
+<form onSubmit={handleSubmit}>
+  <input name="field" />
+</form>
+
+// ❌ Don't create custom form components
+const CustomForm = () => {
+  // Custom form logic
+};
+```
+
+## Benefits:
+- **Type Safety**: Full TypeScript support with Zod schemas
+- **Consistency**: Uniform form behavior across the application
+- **Validation**: Built-in validation with proper error handling
+- **Accessibility**: Proper form accessibility features
+- **Maintainability**: Centralized form logic and styling
