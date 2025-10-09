@@ -18,4 +18,5 @@ export const Routes = {
     VERIFICATION: `${INSPECTIONS_NEW_BASE}/verification`,
     PREVIEW: `${INSPECTIONS_NEW_BASE}/preview`,
   },
+  TEST_CHECKLIST: "/test-checklist",
 };

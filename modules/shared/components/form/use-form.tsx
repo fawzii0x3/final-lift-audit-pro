@@ -92,22 +92,32 @@ export function useCreateArrayForm<Schema extends ZodSchema>(
   function createArrayField<
     TYPE extends FieldType,
     ArrayName extends ArrayPath<TypeOf<Schema>>,
-  >(
-    arrayName: ArrayName,
-    index: number,
-    fieldName: Path<TypeOf<Schema>[ArrayName][number]>,
-    type: TYPE,
-    props: FieldProps[TYPE],
-  ) {
-    return (
-      <Controller
-        name={`${arrayName}.${index}.${fieldName}` as FieldName<Schema>}
-        control={control}
-        render={(renderProps) => (
-          <RenderField type={type} props={props} {...renderProps} />
-        )}
-      />
-    );
+  >(arrayName: ArrayName) {
+    type ArrayFieldComponentProps = {
+      index: number;
+      fieldName: Path<TypeOf<Schema>[ArrayName][number]>;
+      type: TYPE;
+      props: FieldProps[TYPE];
+    };
+
+    function ArrayFieldComponent({
+      index,
+      fieldName,
+      type,
+      props,
+    }: ArrayFieldComponentProps) {
+      return (
+        <Controller
+          name={`${arrayName}.${index}.${fieldName}` as FieldName<Schema>}
+          control={control}
+          render={(renderProps) => (
+            <RenderField type={type} props={props} {...renderProps} />
+          )}
+        />
+      );
+    }
+
+    return ArrayFieldComponent;
   }
 
   function useArrayField(

@@ -18,6 +18,7 @@ import { CreateClient } from "@modules/clients/create";
 import { EditClient } from "@modules/clients/edit";
 import { Technicians } from "@modules/techniciens/screen";
 import TechnicianCreate from "@modules/techniciens/create";
+import { TestChecklistPage } from "@modules/inspection/test-checklist";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
       {
         path: Routes.TECHNICIANS_CREATE,
         Component: TechnicianCreate,
+      },
+      {
+        path: Routes.TEST_CHECKLIST,
+        Component: TestChecklistPage,
       },
     ],
   },

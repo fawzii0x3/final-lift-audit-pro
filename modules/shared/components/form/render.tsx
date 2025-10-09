@@ -31,6 +31,8 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
+import { ChecklistItem } from "@modules/inspection/components/check-list-item";
+import type { ChecklistItemData } from "@modules/inspection/components/check-list-item/types";
 
 interface TextFieldProps extends ComponentProps<"input"> {
   label: string;
@@ -52,11 +54,18 @@ export interface DateFieldProps {
   maxDate?: Date;
 }
 
+export interface ChecklistItemFieldProps {
+  inspectionId?: string;
+  disabled?: boolean;
+  showKeyboardHints?: boolean;
+}
+
 export type ZodSchema = z.Schema;
 export type FieldProps = {
   text: TextFieldProps;
   select: SelectFieldProps;
   date: DateFieldProps;
+  checklist: ChecklistItemFieldProps;
 };
 export type FieldType = keyof FieldProps;
 
@@ -193,8 +202,71 @@ export function RenderField<Schema extends ZodSchema, TYPE extends FieldType>({
         </FormItem>
       );
     }
+    case "checklist": {
+      const checklistProps = props as ChecklistItemFieldProps;
+      const currentValue = (field.value as {
+        itemNumber: number;
+        itemKey: string;
+        title: string;
+        components: ChecklistItemData[];
+        selectedComponent?: ChecklistItemData | null;
+      }) || {
+        itemNumber: 0,
+        itemKey: "",
+        title: "",
+        components: [],
+        selectedComponent: null,
+      };
+
+      return (
+        <FormItem>
+          <FormControl>
+            <ChecklistItem
+              itemNumber={currentValue.itemNumber}
+              itemKey={currentValue.itemKey}
+              title={currentValue.title}
+              components={currentValue.components}
+              onStatusChange={(componentId, status) => {
+                // Update the form value
+                const updatedComponents = currentValue.components.map((comp) =>
+                  comp.id === componentId ? { ...comp, status } : comp,
+                );
+                field.onChange({
+                  ...currentValue,
+                  components: updatedComponents,
+                });
+              }}
+              onComponentSelect={(component) => {
+                // Update the form value
+                field.onChange({
+                  ...currentValue,
+                  selectedComponent: component,
+                });
+              }}
+              onComponentUpdate={(componentId, updates) => {
+                // Update the form value
+                const updatedComponents = currentValue.components.map((comp) =>
+                  comp.id === componentId ? { ...comp, ...updates } : comp,
+                );
+                field.onChange({
+                  ...currentValue,
+                  components: updatedComponents,
+                });
+              }}
+              selectedComponentId={
+                currentValue.selectedComponent?.id || undefined
+              }
+              inspectionId={checklistProps.inspectionId}
+              disabled={checklistProps.disabled}
+              showKeyboardHints={checklistProps.showKeyboardHints}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      );
+    }
     default: {
-      const { label, ...rest } = props;
+      const { label, ...rest } = props as TextFieldProps;
       return (
         <FormItem>
           <FormLabel>{label}</FormLabel>
